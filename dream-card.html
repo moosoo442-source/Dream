@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ dream card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --b0:#edf8ff;--b1:#d4efff;--b2:#8ecff5;--b3:#3ab4f0;
+  --b4:#1190cc;--b5:#08618f;--navy:#052438;
+  --white:#fff;--glass:rgba(255,255,255,0.58);
+  --border:rgba(255,255,255,0.82);--red:#d85060;
+}
+html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;background:var(--b0);}
+
+/* BG */
+.bg{position:fixed;inset:0;z-index:0;
+  background:linear-gradient(130deg,#cce9ff 0%,#e8f8ff 45%,#c4e6fa 75%,#daf3ff 100%);}
+.orb{position:fixed;border-radius:50%;filter:blur(85px);opacity:.5;pointer-events:none;z-index:0;
+  animation:orbmove var(--d,14s) ease-in-out infinite alternate;}
+@keyframes orbmove{from{transform:translate(0,0)}to{transform:translate(var(--tx,30px),var(--ty,20px))}}
+.o1{width:560px;height:380px;background:#ace3ff;top:-120px;left:-120px;--d:17s;--tx:50px;--ty:35px;}
+.o2{width:420px;height:320px;background:#c8f0ff;bottom:-90px;right:-90px;--d:12s;--tx:-35px;--ty:-25px;}
+.o3{width:280px;height:260px;background:#b8e8ff;top:35%;left:28%;--d:20s;--tx:25px;--ty:40px;}
+
+/* APP SHELL */
+.app{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;}
+
+/* TOP BAR */
+.topbar{
+  height:54px;flex-shrink:0;
+  display:flex;align-items:center;
+  padding:0 28px;gap:16px;
+  background:rgba(255,255,255,0.48);
+  border-bottom:1px solid rgba(255,255,255,0.75);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  position:relative;z-index:10;
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;font-weight:600;color:var(--navy);
+  letter-spacing:.5px;flex-shrink:0;cursor:pointer;user-select:none;
+}
+.logo span{color:var(--b3);}
+.tabs{flex:1;display:flex;justify-content:center;
+  background:rgba(255,255,255,0.5);border-radius:99px;padding:4px;
+  border:1px solid var(--border);max-width:440px;margin:0 auto;}
+.tab{flex:1;font-size:11px;font-weight:700;letter-spacing:1px;
+  padding:6px 0;border-radius:99px;color:var(--navy);opacity:.45;
+  cursor:pointer;transition:all .2s;border:none;background:none;
+  font-family:'Noto Sans KR',sans-serif;}
+.tab:hover{opacity:.75;}
+.tab.on{background:var(--white);opacity:1;color:var(--b4);
+  box-shadow:0 2px 12px rgba(58,180,240,.18);}
+.dot-row{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--b3);opacity:.28;
+  cursor:pointer;transition:all .2s;border:none;padding:0;}
+.dot.on{opacity:1;transform:scale(1.35);}
+.top-badge{font-size:9px;font-weight:900;letter-spacing:2.5px;color:var(--b4);
+  border:1.5px solid var(--b2);padding:4px 12px;border-radius:99px;
+  background:rgba(255,255,255,.5);flex-shrink:0;}
+
+/* SLIDER VIEWPORT */
+.viewport{flex:1;overflow:hidden;position:relative;}
+.slider{
+  display:flex;height:100%;
+  width:400%; /* 4 slides */
+  transition:transform .55s cubic-bezier(.77,0,.18,1);
+  will-change:transform;
+}
+.slide{
+  width:25%; /* 100vw each */
+  height:100%;
+  display:flex;align-items:stretch;
+  padding:20px 24px;gap:14px;
+  flex-shrink:0;
+}
+
+/* CARD */
+.card{
+  background:var(--glass);border-radius:22px;
+  border:1.5px solid var(--border);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  box-shadow:0 8px 36px rgba(14,130,190,.08),inset 0 1px 0 rgba(255,255,255,.9);
+  padding:22px 20px;display:flex;flex-direction:column;gap:11px;
+  overflow:hidden;position:relative;
+}
+.card-auto{flex:1;}
+.card-w220{width:220px;flex-shrink:0;}
+.card-w200{width:200px;flex-shrink:0;}
+.card-w250{width:250px;flex-shrink:0;}
+.card-w260{width:260px;flex-shrink:0;}
+
+/* TYPE */
+.clabel{font-size:9px;font-weight:900;letter-spacing:4px;color:var(--b3);opacity:.8;}
+.ctitle{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;
+  color:var(--navy);line-height:.9;letter-spacing:-1px;}
+.ctitle em{font-style:italic;color:var(--b3);}
+.csub{font-size:11px;color:var(--navy);opacity:.4;letter-spacing:2px;font-weight:600;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(58,180,240,.22),transparent);flex-shrink:0;}
+
+/* STATUS */
+.status{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:700;color:var(--b4);opacity:.75;}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--b3);animation:blink 2.2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* PILLS */
+.pill-row{display:flex;flex-wrap:wrap;gap:7px;}
+.pill{font-size:10px;font-weight:700;padding:5px 14px;border-radius:99px;
+  letter-spacing:.5px;transition:transform .15s;cursor:default;}
+.pill:hover{transform:scale(1.05);}
+.p-fill{background:var(--b3);color:#fff;box-shadow:0 2px 12px rgba(58,180,240,.3);}
+.p-out{background:rgba(255,255,255,.7);color:var(--navy);border:1.5px solid rgba(58,180,240,.3);}
+.p-ghost{background:transparent;color:var(--b4);border:1.5px solid rgba(58,180,240,.4);}
+
+/* NOTE */
+.note{background:rgba(255,255,255,.52);border-radius:12px;padding:13px 15px;
+  font-size:12px;color:#2a4a62;line-height:1.9;
+  border:1px solid rgba(255,255,255,.85);}
+
+/* LIST */
+.li{display:flex;align-items:flex-start;gap:9px;font-size:11.5px;color:#2a4a62;
+  padding:7px 0;border-bottom:1px solid rgba(58,180,240,.09);line-height:1.6;}
+.li:last-child{border-bottom:none;}
+.lm{flex-shrink:0;font-weight:900;font-size:12px;margin-top:1px;}
+.lm-b{color:var(--b3);}
+.lm-r{color:var(--red);}
+
+/* BAR */
+.bar-item{display:flex;align-items:center;gap:10px;}
+.bar-lbl{font-size:10px;font-weight:700;color:var(--b5);width:46px;flex-shrink:0;letter-spacing:.5px;opacity:.7;}
+.bar-track{flex:1;height:6px;border-radius:99px;background:rgba(58,180,240,.12);overflow:hidden;}
+.bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--b2),var(--b3));
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .7s cubic-bezier(.4,0,.2,1) var(--delay,.1s);}
+.bar-fill.animate{transform:scaleX(1);}
+.bar-val{font-size:10px;color:var(--b3);width:36px;text-align:right;font-weight:700;flex-shrink:0;}
+
+/* NG */
+.ng-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:10px;
+  background:rgba(216,80,96,.05);border-left:3px solid rgba(216,80,96,.38);}
+.ng-x{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--red);flex-shrink:0;line-height:1.45;}
+.ng-t{font-size:11px;color:#3a4a5e;line-height:1.65;}
+.wel-item{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border-radius:10px;
+  background:rgba(58,180,240,.06);border-left:3px solid rgba(58,180,240,.3);}
+.wel-o{font-size:13px;color:var(--b3);flex-shrink:0;line-height:1.5;font-weight:900;}
+.wel-t{font-size:11px;color:#2a4a62;line-height:1.6;}
+
+/* LINKS */
+.lnk{display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:rgba(255,255,255,.58);border-radius:14px;border:1px solid rgba(255,255,255,.88);
+  text-decoration:none;cursor:pointer;transition:all .18s;}
+.lnk:hover{background:rgba(255,255,255,.92);transform:translateX(5px);box-shadow:0 4px 18px rgba(14,130,190,.13);}
+.lico{width:34px;height:34px;border-radius:11px;
+  background:linear-gradient(135deg,var(--b3),var(--b4));
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;box-shadow:0 3px 12px rgba(58,180,240,.28);}
+.lico svg{width:15px;height:15px;fill:#fff;}
+.ltxt{font-size:12px;font-weight:700;color:var(--navy);flex:1;letter-spacing:.4px;}
+.ldesc{font-size:10px;color:var(--navy);opacity:.38;margin-top:2px;}
+.larr{font-size:14px;color:var(--b3);font-weight:900;}
+
+/* KEYWORD CLOUD */
+.kcloud{display:flex;flex-wrap:wrap;gap:7px;}
+.ktag{font-size:11px;font-weight:700;padding:6px 15px;border-radius:99px;
+  cursor:default;transition:transform .15s;}
+.ktag:hover{transform:scale(1.06);}
+.kt1{background:var(--b3);color:#fff;}
+.kt2{background:rgba(255,255,255,.7);color:var(--navy);border:1.5px solid rgba(58,180,240,.28);}
+.kt3{background:rgba(58,180,240,.1);color:var(--b4);border:1.5px solid rgba(58,180,240,.22);}
+
+/* DECO */
+.deco{font-family:'Bebas Neue',sans-serif;font-size:96px;color:var(--navy);opacity:.04;
+  position:absolute;bottom:10px;right:14px;line-height:1;pointer-events:none;letter-spacing:-3px;user-select:none;}
+
+/* ARROW BUTTONS */
+.arr-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  display:flex;gap:10px;z-index:20;}
+.arr{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.7);
+  border:1.5px solid var(--border);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:17px;color:var(--navy);
+  transition:all .2s;box-shadow:0 4px 16px rgba(14,130,190,.14);}
+.arr:hover{background:#fff;box-shadow:0 6px 20px rgba(14,130,190,.24);}
+.arr:disabled{opacity:.18;cursor:default;}
+
+.hint{position:fixed;bottom:30px;right:26px;
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  color:var(--b4);opacity:.32;z-index:5;pointer-events:none;}
+
+/* ── 이스터에그 모달 ── */
+.egg-modal{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(5,36,56,.35);backdrop-filter:blur(12px);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+.egg-modal.show{opacity:1;pointer-events:auto;}
+.egg-box{
+  background:rgba(255,255,255,.88);
+  border-radius:26px;border:1.5px solid var(--border);
+  padding:36px 40px;max-width:360px;width:90%;
+  text-align:center;
+  transform:scale(.88) translateY(12px);
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 20px 60px rgba(14,130,190,.18);
+}
+.egg-modal.show .egg-box{transform:scale(1) translateY(0);}
+.egg-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:38px;font-weight:600;color:var(--navy);
+  line-height:1;letter-spacing:-1px;margin-bottom:6px;
+}
+.egg-title em{font-style:italic;color:var(--b3);}
+.egg-sub{font-size:11px;color:var(--navy);opacity:.4;letter-spacing:2px;margin-bottom:20px;}
+.egg-msg{font-size:13px;color:#2a4a62;line-height:2;margin-bottom:20px;}
+.egg-close{
+  font-size:11px;font-weight:700;letter-spacing:1px;
+  padding:8px 24px;border-radius:99px;
+  background:var(--b3);color:#fff;border:none;cursor:pointer;
+  box-shadow:0 4px 14px rgba(58,180,240,.3);
+  transition:all .2s;
+}
+.egg-close:hover{background:var(--b4);transform:translateY(-1px);}
+.egg-emoji{font-size:36px;margin-bottom:10px;}
+
+/* 로고 클릭 힌트 (은근하게) */
+.logo::after{
+  content:'';display:inline-block;width:4px;height:4px;
+  border-radius:50%;background:var(--b3);opacity:.4;
+  margin-left:5px;vertical-align:middle;
+  animation:blink 2.5s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+</div>
+
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo" id="logo-btn" title="">✦ <span>dream</span></div>
+    <div class="tabs">
+      <button class="tab on" onclick="goTo(0)">PROFILE</button>
+      <button class="tab" onclick="goTo(1)">STYLE</button>
+      <button class="tab" onclick="goTo(2)">NG LIST</button>
+      <button class="tab" onclick="goTo(3)">LINKS</button>
+    </div>
+    <div class="dot-row">
+      <button class="dot on" onclick="goTo(0)"></button>
+      <button class="dot" onclick="goTo(1)"></button>
+      <button class="dot" onclick="goTo(2)"></button>
+      <button class="dot" onclick="goTo(3)"></button>
+    </div>
+    <div class="top-badge">ハイキュー!!</div>
+  </div>
+
+  <!-- SLIDER VIEWPORT -->
+  <div class="viewport">
+    <div class="slider" id="slider">
+
+      <!-- SLIDE 0 : PROFILE -->
+      <div class="slide">
+        <div class="card card-w220">
+          <div class="deco">01</div>
+          <div class="clabel">PROFILE</div>
+          <div class="ctitle">your<br><em>name</em></div>
+          <div class="csub">ハイキュー!! DREAMER</div>
+          <div class="divider"></div>
+          <div class="status"><div class="sdot"></div>오픈 드림 활성화</div>
+          <div class="pill-row">
+            <span class="pill p-fill">성인</span>
+            <span class="pill p-fill">오픈</span>
+            <span class="pill p-out">반이입</span>
+            <span class="pill p-out">단일</span>
+          </div>
+        </div>
+
+        <div class="card card-auto">
+          <div class="clabel">ABOUT</div>
+          <div class="note" style="flex:unset;">
+            드림주 단독 서사 및 캐릭터들과의 관계성 있어요 ˙ᵕ˙<br>
+            언질 주시면 감사하고 드림 지우기 느껴지면 바로 블락해요<br>
+            팔로우 전 카드 꼭 읽어주세요 🏐
+          </div>
+          <div class="divider"></div>
+          <div class="clabel">LIKE</div>
+          <div class="li"><span class="lm lm-b">○</span><span>반드시 1t1d · 맞팔 형태 교류</span></div>
+          <div class="li"><span class="lm lm-b">○</span><span>비계 연결 환영 (사담 목적)</span></div>
+          <div class="li"><span class="lm lm-b">○</span><span>작품 이야기 나누기</span></div>
+          <div class="divider"></div>
+          <div class="clabel">HATE</div>
+          <div class="li"><span class="lm lm-r">×</span><span>원작 미소비 · 무단 캡처 · 드림 지우기 · 분쟁 유도</span></div>
+        </div>
+
+        <div class="card card-w200">
+          <div class="clabel">KEYWORD</div>
+          <div class="kcloud">
+            <span class="ktag kt1">하이큐!!</span>
+            <span class="ktag kt2">ハイキュー!!</span>
+            <span class="ktag kt2">드림</span>
+            <span class="ktag kt3">단일 드림주</span>
+            <span class="ktag kt3">오픈 드림</span>
+            <span class="ktag kt3">반이입</span>
+            <span class="ktag kt3">갠홈</span>
+          </div>
+          <div class="divider"></div>
+          <div style="text-align:center;font-size:28px;opacity:.18;letter-spacing:6px;padding:6px 0;">🏐 🌊 ✦</div>
+          <div class="note" style="font-size:11px;text-align:center;padding:10px 12px;">
+            같이 덕질해요<br>˙ᵕ˙ ♡
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 1 : STYLE -->
+      <div class="slide">
+        <div class="card card-w250">
+          <div class="clabel">DREAM STYLE</div>
+          <div class="ctitle" style="font-size:34px;">나의<br><em>드림</em></div>
+          <div class="divider"></div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="bar-item">
+              <span class="bar-lbl">이입도</span>
+              <div class="bar-track"><div class="bar-fill" style="--delay:.15s;width:70%;"></div></div>
+              <span class="bar-val">반이입</span>
+            </div>
+            <div class="bar-item">
+              <span class="bar-lbl">오픈도</span>
+              <div class="bar-track"><div class="bar-fill" style="--delay:.28s;width:90%;"></div></div>
+              <span class="bar-val">오픈</span>
+            </div>
+            <div class="bar-item">
+              <span class="bar-lbl">교류도</span>
+              <div class="bar-track"><div class="bar-fill" style="--delay:.41s;width:80%;"></div></div>
+              <span class="bar-val">활발</span>
+            </div>
+            <div class="bar-item">
+              <span class="bar-lbl">서사</span>
+              <div class="bar-track"><div class="bar-fill" style="--delay:.54s;width:95%;"></div></div>
+              <span class="bar-val">있음</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-auto">
+          <div class="clabel">NOTE</div>
+          <div class="li"><span class="lm lm-b">✦</span><span>단일 드림주입니다. 다른 드림주와 비교하거나 엮지 말아주세요.</span></div>
+          <div class="li"><span class="lm lm-b">✦</span><span>오픈 드림이지만 드림 지우기가 느껴지면 바로 블락합니다.</span></div>
+          <div class="li"><span class="lm lm-b">✦</span><span>교류 시 언질 주시면 감사해요 ˙ᵕ˙</span></div>
+          <div class="li"><span class="lm lm-b">✦</span><span>비계 연결은 사담 목적으로 환영합니다.</span></div>
+          <div class="li"><span class="lm lm-b">✦</span><span>계정 내 글·이미지 무단 캡처·전재 금지합니다.</span></div>
+          <div class="li"><span class="lm lm-b">✦</span><span>원작 미소비 분은 스포 배려가 어려워 정중히 사양해요.</span></div>
+        </div>
+
+        <div class="card card-w200">
+          <div class="clabel">WELCOME</div>
+          <div class="ctitle" style="font-size:28px;">이런 분<br><em>환영</em></div>
+          <div class="divider"></div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="wel-item"><span class="wel-o">○</span><span class="wel-t">원작 소비 하신 분</span></div>
+            <div class="wel-item"><span class="wel-o">○</span><span class="wel-t">드림 존중하는 분</span></div>
+            <div class="wel-item"><span class="wel-o">○</span><span class="wel-t">조용한 교류 원하는 분</span></div>
+            <div class="wel-item"><span class="wel-o">○</span><span class="wel-t">같이 덕질하고 싶은 분</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 : NG LIST -->
+      <div class="slide">
+        <div class="card card-w220">
+          <div class="deco">NG</div>
+          <div class="clabel">NG LIST</div>
+          <div class="ctitle" style="font-size:34px;">이런 분<br>연결 <em style="color:var(--red);">NO</em></div>
+          <div class="divider"></div>
+          <div class="note" style="font-size:11px;flex:1;">
+            NG 해당되셔도 악의 없이<br>
+            팔로우하신 경우 편하게<br>
+            말씀해 주세요 ˙ᵕ˙<br><br>
+            <span style="color:var(--b4);font-weight:700;">팔로우 전 꼭 확인!</span>
+          </div>
+        </div>
+
+        <div class="card card-auto">
+          <div class="clabel">RULES</div>
+          <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
+            <div class="ng-item"><span class="ng-x">×</span><span class="ng-t">드림 지우기 / 타 드림러와 비교 언급하는 분</span></div>
+            <div class="ng-item"><span class="ng-x">×</span><span class="ng-t">무단 캡처 · 무단 공유 · 전재하는 분</span></div>
+            <div class="ng-item"><span class="ng-x">×</span><span class="ng-t">혐한 · 정치 · 혐오 발언 포함 계정</span></div>
+            <div class="ng-item"><span class="ng-x">×</span><span class="ng-t">미성년자 성적 언급 포함 계정</span></div>
+            <div class="ng-item"><span class="ng-x">×</span><span class="ng-t">타 드림러 디스 · 분쟁 유도하는 분</span></div>
+            <div class="ng-item"><span class="ng-x">×</span><span class="ng-t">원작 미소비 상태인 분 (스포 배려 어려워요)</span></div>
+          </div>
+        </div>
+
+        <div class="card card-w200">
+          <div class="clabel">WELCOME</div>
+          <div class="ctitle" style="font-size:28px;">이런 분<br><em>환영</em></div>
+          <div class="divider"></div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="wel-item"><span class="wel-o">○</span><span class="wel-t">원작 소비하신 분</span></div>
+            <div class="wel-item"><span class="wel-o">○</span><span class="wel-t">드림 존중하는 분</span></div>
+            <div class="wel-item"><span class="wel-o">○</span><span class="wel-t">조용히 교류 원하는 분</span></div>
+            <div class="wel-item"><span class="wel-o">○</span><span class="wel-t">함께 덕질하고 싶은 분</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3 : LINKS -->
+      <div class="slide">
+        <div class="card card-w250">
+          <div class="clabel">FIND ME</div>
+          <div class="ctitle">연결<br><em>해요</em></div>
+          <div class="csub">팔로우 전 카드 읽어주세요 ˙ᵕ˙</div>
+          <div class="divider"></div>
+          <div style="font-size:32px;text-align:center;letter-spacing:8px;opacity:.18;padding:8px 0;">🌊 🏐 ✦</div>
+          <div class="note" style="font-size:12px;text-align:center;">
+            하이큐!! 드림 같이<br>신나게 즐겨요 ˙ᵕ˙
+          </div>
+        </div>
+
+        <div class="card card-auto">
+          <div class="clabel">LINKS</div>
+          <div style="display:flex;flex-direction:column;gap:9px;flex:1;justify-content:center;">
+            <a class="lnk" href="https://x.com/" target="_blank">
+              <div class="lico"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
+              <div style="flex:1;"><div class="ltxt">Twitter / X</div><div class="ldesc">메인 계정</div></div>
+              <span class="larr">→</span>
+            </a>
+            <a class="lnk" href="https://pushoong.com/" target="_blank">
+              <div class="lico"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+              <div style="flex:1;"><div class="ltxt">Pushoong</div><div class="ldesc">익명 질문함</div></div>
+              <span class="larr">→</span>
+            </a>
+            <a class="lnk" href="https://postype.com/" target="_blank">
+              <div class="lico"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg></div>
+              <div style="flex:1;"><div class="ltxt">Postype</div><div class="ldesc">글 · 서사</div></div>
+              <span class="larr">→</span>
+            </a>
+            <a class="lnk" href="https://spin-spin.com/" target="_blank">
+              <div class="lico"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+              <div style="flex:1;"><div class="ltxt">Spin</div><div class="ldesc">플레이리스트</div></div>
+              <span class="larr">→</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="card card-w200" style="align-items:center;justify-content:center;text-align:center;gap:14px;">
+          <div class="clabel">HAIKYUU!!</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:var(--navy);opacity:.07;line-height:1;">飛べ</div>
+          <div class="divider"></div>
+          <div style="font-size:11px;color:var(--navy);opacity:.42;line-height:2.2;letter-spacing:1px;">ハイキュー!!<br>드림을 꿈꾸며<br>✦ ✦ ✦</div>
+          <span class="pill p-fill" style="width:100%;text-align:center;">DREAM CARD</span>
+        </div>
+      </div>
+
+    </div><!-- /slider -->
+  </div><!-- /viewport -->
+</div><!-- /app -->
+
+<!-- ARROWS -->
+<div class="arr-wrap">
+  <button class="arr" id="prev" onclick="move(-1)">←</button>
+  <button class="arr" id="next" onclick="move(1)">→</button>
+</div>
+<div class="hint">SWIPE / CLICK →</div>
+
+<!-- 이스터에그 모달 -->
+<div class="egg-modal" id="eggModal" onclick="closeEgg(event)">
+  <div class="egg-box">
+    <div class="egg-emoji">🏐</div>
+    <div class="egg-title">숨겨진 <em>메시지</em></div>
+    <div class="egg-sub">SECRET NOTE ✦</div>
+    <div class="egg-msg">
+      여기까지 찾아온 당신<br>
+      진짜 덕후 맞죠? ˙ᵕ˙<br><br>
+      <span style="color:var(--b3);font-weight:700;">같이 즐겁게 덕질해요 🌊</span>
+    </div>
+    <button class="egg-close" onclick="closeEgg()">닫기 ✦</button>
+  </div>
+</div>
+
+<script>
+let cur = 0;
+const total = 4;
+const slider = document.getElementById('slider');
+
+function goTo(n) {
+  cur = Math.max(0, Math.min(total - 1, n));
+  // 슬라이드: 각 슬라이드가 25% 너비이므로 cur * 25vw = cur/4 * 100%
+  slider.style.transform = `translateX(-${cur * 25}%)`;
+
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('on', i === cur));
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === cur));
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === total - 1;
+
+  // bar 애니메이션: slide 1 진입 시
+  if (cur === 1) {
+    setTimeout(() => {
+      document.querySelectorAll('.bar-fill').forEach(b => b.classList.add('animate'));
+    }, 80);
+  } else {
+    document.querySelectorAll('.bar-fill').forEach(b => b.classList.remove('animate'));
+  }
+}
+
+function move(d) { goTo(cur + d); }
+goTo(0);
+
+// 이스터에그: 로고 클릭
+let logoClicks = 0;
+let logoTimer;
+document.getElementById('logo-btn').addEventListener('click', () => {
+  logoClicks++;
+  clearTimeout(logoTimer);
+  if (logoClicks >= 3) {
+    logoClicks = 0;
+    openEgg();
+  } else {
+    logoTimer = setTimeout(() => { logoClicks = 0; }, 800);
+  }
+});
+
+// 이스터에그: 키보드 코드 (위위아래아래)
+let konamiSeq = [];
+const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown'];
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') { move(1); return; }
+  if (e.key === 'ArrowLeft') { move(-1); return; }
+  konamiSeq.push(e.key);
+  konamiSeq = konamiSeq.slice(-4);
+  if (konamiSeq.join(',') === konamiCode.join(',')) openEgg();
+});
+
+function openEgg() {
+  document.getElementById('eggModal').classList.add('show');
+}
+function closeEgg(e) {
+  if (!e || e.target === document.getElementById('eggModal') || e.type === 'click') {
+    document.getElementById('eggModal').classList.remove('show');
+  }
+}
+
+// 터치 스와이프
+let sx = 0;
+document.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - sx;
+  if (Math.abs(dx) > 55) move(dx < 0 ? 1 : -1);
+});
+</script>
+</body>
+</html>
