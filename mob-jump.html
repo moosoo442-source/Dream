@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>週刊少年ジャンプ 드림카드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&family=Bebas+Neue&family=Oswald:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#f0f0f0;
+  min-height:100vh;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:20px 0 40px;
+}
+
+.card{
+  width:min(390px,100vw);
+  background:#fff;
+  min-height:100vh;
+  position:relative;
+  box-shadow:0 8px 40px rgba(0,0,0,.15);
+}
+
+/* ── 헤더 — 점프 잡지 표지 느낌 ── */
+.jump-header{
+  background:#CC0000;
+  padding:0;
+  position:relative;
+  overflow:hidden;
+}
+/* 배경 사선 패턴 */
+.jump-header::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -55deg,
+    rgba(0,0,0,.06) 0,rgba(0,0,0,.06) 2px,
+    transparent 2px,transparent 12px
+  );
+}
+.jump-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px 10px;
+  position:relative;z-index:1;
+}
+.jump-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;letter-spacing:2px;
+  color:#fff;
+  text-shadow:2px 2px 0 rgba(0,0,0,.25);
+  line-height:1;
+}
+.jump-logo span{
+  font-size:11px;display:block;letter-spacing:3px;color:rgba(255,255,255,.7);
+  font-family:'Oswald',sans-serif;font-weight:400;
+}
+.jump-vol{
+  text-align:right;
+  font-family:'Oswald',sans-serif;
+}
+.jump-vol-num{
+  font-size:36px;font-weight:800;color:#FFD700;
+  line-height:.9;text-shadow:2px 2px 0 rgba(0,0,0,.3);
+}
+.jump-vol-label{
+  font-size:9px;color:rgba(255,255,255,.6);letter-spacing:2px;
+}
+
+/* 이름 배너 */
+.name-banner{
+  background:#FFD700;
+  padding:10px 14px 12px;
+  position:relative;z-index:1;
+}
+.nb-kana{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:9px;color:rgba(0,0,0,.5);
+  letter-spacing:2px;margin-bottom:2px;
+}
+.nb-name{
+  font-family:'Oswald',sans-serif;
+  font-size:32px;font-weight:800;
+  color:#CC0000;
+  letter-spacing:-1px;line-height:1;
+  text-transform:uppercase;
+  text-shadow:2px 2px 0 rgba(0,0,0,.1);
+}
+.nb-sub{
+  font-size:10px;font-weight:700;color:rgba(0,0,0,.5);
+  letter-spacing:1px;margin-top:2px;
+}
+
+/* 태그 띠 */
+.tag-strip{
+  background:#1a1a1a;
+  padding:8px 14px;
+  display:flex;gap:6px;align-items:center;
+  flex-wrap:wrap;
+}
+.tag{
+  font-size:10px;font-weight:900;
+  padding:2px 10px;
+  letter-spacing:.5px;
+}
+.t-red{background:#CC0000;color:#fff;}
+.t-yellow{background:#FFD700;color:#1a1a1a;}
+.t-white{background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.15);}
+
+/* ── 탭 — 잡지 목차 스타일 ── */
+.tabs{
+  display:flex;
+  background:#1a1a1a;
+  position:sticky;top:0;z-index:10;
+  border-bottom:3px solid #CC0000;
+}
+.tab{
+  flex:1;min-height:48px;
+  font-family:'Oswald',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:1.5px;
+  color:rgba(255,255,255,.3);
+  border:none;background:none;cursor:pointer;
+  touch-action:manipulation;
+  transition:all .15s;
+  position:relative;
+}
+.tab.on{color:#FFD700;background:rgba(255,215,0,.06);}
+.tab.on::after{
+  content:'▼';position:absolute;bottom:-11px;left:50%;
+  transform:translateX(-50%);
+  font-size:8px;color:#CC0000;
+}
+
+/* ── 패널 ── */
+.panel{display:none;padding:16px;animation:fadeIn .2s;}
+.panel.on{display:block;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* 섹션 제목 — 잡지 면 번호 스타일 */
+.sec-head{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;
+}
+.sec-num{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;color:#CC0000;line-height:1;
+  flex-shrink:0;
+}
+.sec-label{
+  font-family:'Oswald',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  color:#1a1a1a;
+}
+
+/* 소개 줄 */
+.intro-box{
+  border-left:3px solid #CC0000;
+  padding:8px 12px;
+  background:#fff9f9;
+  font-size:13px;color:#333;
+  line-height:1.85;margin-bottom:14px;
+}
+
+.item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:9px 0;
+  border-bottom:1px solid #f0f0f0;
+  font-size:13px;color:#222;line-height:1.5;
+}
+.item:last-child{border-bottom:none;}
+.im-ok{color:#CC0000;font-weight:900;flex-shrink:0;font-size:15px;line-height:1.2;}
+.im-ng{color:#999;font-weight:900;flex-shrink:0;font-size:15px;line-height:1.2;}
+
+/* stat */
+.stat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.sl{font-size:11px;font-weight:700;color:#666;width:40px;}
+.st{flex:1;height:6px;background:#f0f0f0;overflow:hidden;}
+.sf{height:100%;background:#CC0000;}
+.sv{font-size:11px;font-weight:700;color:#CC0000;width:36px;text-align:right;}
+
+/* rule */
+.rule{
+  display:flex;gap:8px;
+  padding:8px 10px;
+  background:#fafafa;
+  border:1px solid #f0f0f0;
+  margin-bottom:6px;
+  font-size:12px;color:#333;line-height:1.5;
+}
+.rule-dot{color:#CC0000;font-weight:900;flex-shrink:0;}
+
+/* ng */
+.ng-item{
+  display:flex;gap:10px;
+  padding:10px 12px;
+  border:1px solid #fee;
+  background:#fff9f9;
+  margin-bottom:6px;
+  font-size:13px;color:#333;line-height:1.5;
+}
+.ng-x{
+  font-weight:900;color:#CC0000;flex-shrink:0;font-size:14px;line-height:1.3;
+}
+
+/* link */
+.link-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 10px;
+  border-bottom:1px solid #f0f0f0;
+  text-decoration:none;cursor:pointer;
+}
+.link-item:last-child{border-bottom:none;}
+.link-item:active{background:#fff9f9;}
+.link-icon{
+  width:36px;height:36px;
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.li-x{background:#000;color:#fff;font-weight:900;font-size:12px;}
+.li-p{background:#6a5acd;color:#fff;font-size:12px;font-weight:700;}
+.li-pt{background:#333;color:#fff;font-size:11px;font-weight:700;}
+.li-s{background:#CC0000;color:#fff;font-size:12px;}
+.link-name{font-size:13px;font-weight:700;color:#1a1a1a;flex:1;}
+.link-arr{color:#CC0000;font-size:16px;font-weight:900;}
+
+/* ── 하단 ── */
+.footer{
+  background:#1a1a1a;
+  padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:8px;
+}
+.footer-txt{
+  font-size:10px;color:rgba(255,255,255,.25);
+  cursor:pointer;line-height:1.7;
+  font-family:'Oswald',sans-serif;letter-spacing:1px;
+}
+.footer-txt:hover{color:rgba(255,215,0,.5);}
+.footer-jp{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:11px;color:#FFD700;
+  font-weight:700;letter-spacing:1px;
+}
+
+/* 이스터에그 */
+.egg{position:fixed;inset:0;z-index:999;background:rgba(26,26,26,.95);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.egg.show{opacity:1;pointer-events:auto;}
+.egg-card{background:#fff;padding:28px 24px;text-align:center;width:min(280px,80vw);border-top:4px solid #CC0000;}
+.egg-t{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#CC0000;margin-bottom:4px;letter-spacing:2px;}
+.egg-m{font-size:13px;color:#555;line-height:1.9;margin-bottom:18px;}
+.egg-btn{background:#CC0000;color:#fff;font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;padding:10px 24px;border:none;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="card">
+  <!-- 헤더 -->
+  <div class="jump-header">
+    <div class="jump-top">
+      <div class="jump-logo">JUMP<span>週刊少年</span></div>
+      <div class="jump-vol">
+        <div class="jump-vol-num">13</div>
+        <div class="jump-vol-label">DREAMER NO.</div>
+      </div>
+    </div>
+    <div class="name-banner">
+      <div class="nb-kana">ハイキュー!! ドリーマー</div>
+      <div class="nb-name">your name</div>
+      <div class="nb-sub">야치 히토카 드림 · ハイキュー!!</div>
+    </div>
+  </div>
+
+  <!-- 태그 -->
+  <div class="tag-strip">
+    <span class="tag t-red">성인</span>
+    <span class="tag t-yellow">오픈</span>
+    <span class="tag t-white">반이입</span>
+    <span class="tag t-white">단일</span>
+  </div>
+
+  <!-- 탭 -->
+  <div class="tabs">
+    <button class="tab on" data-i="0">PROFILE</button>
+    <button class="tab" data-i="1">STYLE</button>
+    <button class="tab" data-i="2">NG</button>
+    <button class="tab" data-i="3">LINKS</button>
+  </div>
+
+  <!-- 소개 -->
+  <div class="panel on" id="pn0">
+    <div class="sec-head"><span class="sec-num">P.1</span><span class="sec-label">드리머 소개</span></div>
+    <div class="intro-box">서사 및 관계성 있어요 ˙ᵕ˙ 언질 주시면 감사해요 🏐</div>
+    <div class="item"><span class="im-ok">○</span><span>1t1d · 맞팔 형태 교류</span></div>
+    <div class="item"><span class="im-ok">○</span><span>비계 연결 환영합니다</span></div>
+    <div class="item"><span class="im-ok">○</span><span>작품 이야기 나누기</span></div>
+    <div class="item"><span class="im-ng">×</span><span style="color:#888">원작 미소비 · 드림 지우기</span></div>
+    <div class="item"><span class="im-ng">×</span><span style="color:#888">무단 캡처 · 분쟁 유도</span></div>
+  </div>
+
+  <!-- 스타일 -->
+  <div class="panel" id="pn1">
+    <div class="sec-head"><span class="sec-num">P.2</span><span class="sec-label">드림 스타일</span></div>
+    <div class="stat-row"><span class="sl">이입도</span><div class="st"><div class="sf" style="width:70%"></div></div><span class="sv">반이입</span></div>
+    <div class="stat-row"><span class="sl">오픈도</span><div class="st"><div class="sf" style="width:90%"></div></div><span class="sv">오픈</span></div>
+    <div class="stat-row"><span class="sl">교류도</span><div class="st"><div class="sf" style="width:75%"></div></div><span class="sv">활발</span></div>
+    <div class="stat-row"><span class="sl">서사</span><div class="st"><div class="sf" style="width:95%"></div></div><span class="sv">있음</span></div>
+    <div style="height:14px"></div>
+    <div class="rule"><span class="rule-dot">✦</span><span>단일 드림주 — 비교·엮기 절대 금지</span></div>
+    <div class="rule"><span class="rule-dot">✦</span><span>교류 전 언질 필수입니다</span></div>
+    <div class="rule"><span class="rule-dot">✦</span><span>무단 캡처·전재 금지</span></div>
+    <div class="rule"><span class="rule-dot">✦</span><span>원작 미소비인 분 사양합니다</span></div>
+  </div>
+
+  <!-- NG -->
+  <div class="panel" id="pn2">
+    <div class="sec-head"><span class="sec-num">P.3</span><span class="sec-label">NG 목록</span></div>
+    <div class="ng-item"><span class="ng-x">×</span><span>드림 지우기 / 다른 드림 비교 언급</span></div>
+    <div class="ng-item"><span class="ng-x">×</span><span>무단 캡처 · 공유 · 전재</span></div>
+    <div class="ng-item"><span class="ng-x">×</span><span>혐한 · 혐오 · 정치 발언 계정</span></div>
+    <div class="ng-item"><span class="ng-x">×</span><span>미성년자 성적 언급 계정</span></div>
+    <div class="ng-item"><span class="ng-x">×</span><span>분쟁 유도 · 원작 미소비인 분</span></div>
+  </div>
+
+  <!-- 링크 -->
+  <div class="panel" id="pn3">
+    <div class="sec-head"><span class="sec-num">P.4</span><span class="sec-label">링크 모음</span></div>
+    <div style="border:1px solid #f0f0f0;border-radius:4px;overflow:hidden;">
+      <a class="link-item" href="https://x.com/" target="_blank">
+        <div class="link-icon li-x">𝕏</div>
+        <span class="link-name">Twitter / X</span><span class="link-arr">›</span>
+      </a>
+      <a class="link-item" href="https://pushoong.com/" target="_blank">
+        <div class="link-icon li-p">P</div>
+        <span class="link-name">Pushoong</span><span class="link-arr">›</span>
+      </a>
+      <a class="link-item" href="https://postype.com/" target="_blank">
+        <div class="link-icon li-pt">PT</div>
+        <span class="link-name">Postype</span><span class="link-arr">›</span>
+      </a>
+      <a class="link-item" href="https://spin-spin.com/" target="_blank">
+        <div class="link-icon li-s">🌀</div>
+        <span class="link-name">Spin</span><span class="link-arr">›</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <div class="footer">
+    <div class="footer-txt" id="egg-trigger">© 2025 WEEKLY JUMP DREAM<br>팔로우 전 꼭 읽어주세요</div>
+    <div class="footer-jp">飛べ！</div>
+  </div>
+</div>
+
+<div class="egg" id="egg">
+  <div class="egg-card">
+    <div class="egg-t">SPECIAL PAGE</div>
+    <div class="egg-m">여기까지 찾아와 줘서<br>고마워요 ˙ᵕ˙ ♡<br>같이 하이큐!! 드림 즐겨요 🏐</div>
+    <button class="egg-btn" id="egg-close">CLOSE</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  function activate(i){
+    tabs.forEach(t=>t.classList.remove('on'));
+    panels.forEach(p=>p.classList.remove('on'));
+    tabs[i].classList.add('on');
+    panels[i].classList.add('on');
+  }
+  tabs.forEach((tab,i)=>tab.addEventListener('click',()=>activate(i)));
+  const t=parseInt(new URLSearchParams(location.search).get('t'));
+  if(!isNaN(t)&&t>=0&&t<tabs.length)activate(t);
+  let cnt=0,timer;
+  document.getElementById('egg-trigger').addEventListener('click',()=>{
+    cnt++;clearTimeout(timer);timer=setTimeout(()=>cnt=0,700);
+    if(cnt>=3){cnt=0;document.getElementById('egg').classList.add('show');}
+  });
+  document.getElementById('egg-close').addEventListener('click',()=>document.getElementById('egg').classList.remove('show'));
+  document.getElementById('egg').addEventListener('click',e=>{if(e.target===document.getElementById('egg'))document.getElementById('egg').classList.remove('show');});
+})();
+</script>
+</body>
+</html>
