@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>dream · 만화컷</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Black+Han+Sans&family=Oswald:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh;
+  background:#111;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+
+/* 16:9 */
+.manga-card{
+  position:relative;
+  width:min(580px,calc(100vw - 32px));
+  aspect-ratio:16/9;
+  background:#f5f0e8;
+  overflow:hidden;
+  display:flex;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+}
+
+/* 스피드라인 배경 (SVG) */
+.speed-bg{
+  position:absolute;inset:0;
+  pointer-events:none;z-index:0;
+  overflow:hidden;
+}
+.speed-bg svg{width:100%;height:100%;}
+
+/* 스크린톤 오버레이 */
+.screentone{
+  position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(0,0,0,.08) 1px,transparent 1px);
+  background-size:4px 4px;
+  pointer-events:none;z-index:0;
+}
+
+/* 좌측 — 임팩트 패널 */
+.impact-panel{
+  width:42%;
+  background:#1a1a1a;
+  position:relative;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  justify-content:flex-end;
+  padding:14px;
+  flex-shrink:0;
+}
+/* 주황 사선 장식 */
+.impact-panel::before{
+  content:'';position:absolute;
+  top:-20px;right:-20px;
+  width:80px;height:120%;
+  background:#f5a623;
+  transform:rotate(-8deg);
+  transform-origin:top right;
+  opacity:.9;
+}
+.impact-panel::after{
+  content:'';position:absolute;
+  top:-20px;right:-30px;
+  width:80px;height:120%;
+  background:#e08010;
+  transform:rotate(-8deg);
+  transform-origin:top right;
+  opacity:.5;
+  margin-right:6px;
+}
+/* 스피드라인 (패널 내) */
+.sl-lines{
+  position:absolute;inset:0;
+  background:repeating-conic-gradient(
+    rgba(255,255,255,.03) 0deg 1deg,
+    transparent 1deg 6deg
+  );
+  transform-origin:center center;
+}
+
+.impact-content{position:relative;z-index:2;}
+.ic-label{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:7px;letter-spacing:3px;
+  color:rgba(255,255,255,.4);
+  margin-bottom:8px;
+}
+.ic-name{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:34px;
+  color:#fff;
+  line-height:.9;
+  text-shadow:3px 3px 0 rgba(0,0,0,.4);
+  margin-bottom:4px;
+  letter-spacing:-1px;
+}
+.ic-sub{
+  font-family:'Oswald',sans-serif;
+  font-size:9px;font-weight:600;letter-spacing:2px;
+  color:#f5a623;
+  margin-bottom:10px;
+}
+.ic-pills{display:flex;flex-wrap:wrap;gap:3px;}
+.ic-pill{
+  font-family:'Share Tech Mono',monospace;
+  font-size:7px;
+  padding:1px 6px;
+  border:1.5px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.6);
+}
+.ic-pill.accent{border-color:#f5a623;color:#f5a623;}
+
+/* 우측 — 컨텐츠 패널 */
+.content-panel{
+  flex:1;
+  display:flex;flex-direction:column;
+  position:relative;z-index:1;
+}
+
+/* 탭 — 만화 챕터 스타일 */
+.manga-nav{
+  display:flex;
+  background:#1a1a1a;
+  flex-shrink:0;
+}
+.tab{
+  flex:1;
+  font-family:'Oswald',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  padding:9px 4px;text-align:center;
+  color:rgba(255,255,255,.3);
+  cursor:pointer;border:none;background:none;
+  transition:all .15s;
+  position:relative;
+}
+.tab::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:3px;
+  background:#f5a623;
+  transform:scaleX(0);transition:transform .15s;
+}
+.tab.on{color:#fff;background:rgba(245,166,35,.1);}
+.tab.on::after{transform:scaleX(1);}
+
+/* 바디 */
+.manga-body{
+  flex:1;
+  display:flex;
+  background:#f5f0e8;
+  overflow:hidden;min-height:0;
+  position:relative;
+}
+.col-a{flex:1;padding:10px 8px 10px 14px;border-right:2px solid #1a1a1a;}
+.col-b{flex:1;padding:10px 14px 10px 8px;}
+
+.panel{display:none;} .panel.on{display:contents;}
+
+.sec-label{
+  font-family:'Oswald',sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:2px;
+  color:#1a1a1a;
+  border-bottom:2px solid #1a1a1a;
+  padding-bottom:3px;margin-bottom:5px;
+}
+.body-txt{font-size:9px;color:#2a2a2a;line-height:1.8;margin-bottom:5px;}
+.li{
+  display:flex;align-items:flex-start;gap:4px;
+  font-size:9px;color:#2a2a2a;
+  padding:3px 0;border-bottom:1px solid #ddd8cc;line-height:1.4;
+}
+.li:last-child{border-bottom:none;}
+.lm{flex-shrink:0;font-weight:900;margin-top:1px;}
+.lb{color:#2255cc;}.lr{color:#cc2020;}
+
+.bar{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.bl{font-family:'Share Tech Mono',monospace;font-size:7px;color:#888;width:28px;}
+.bt{flex:1;height:4px;background:#ddd8cc;overflow:hidden;}
+.bf{height:100%;background:#1a1a1a;}
+.bv{font-family:'Share Tech Mono',monospace;font-size:7px;color:#555;width:28px;text-align:right;}
+
+.ng{
+  display:flex;align-items:flex-start;gap:4px;
+  padding:3px 0;border-bottom:1px solid #ddd8cc;
+  font-size:9px;color:#2a2a2a;line-height:1.4;
+}
+.ng:last-child{border-bottom:none;}
+.ng-x{font-family:'Black Han Sans',sans-serif;font-size:10px;color:#cc2020;flex-shrink:0;line-height:1.2;}
+
+.lnk{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 0;border-bottom:1px solid #ddd8cc;
+  text-decoration:none;cursor:pointer;
+}
+.lnk:last-child{border-bottom:none;}
+.lnk-box{
+  width:16px;height:16px;
+  background:#1a1a1a;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:7px;color:#f5a623;font-weight:900;
+}
+.ltx{font-size:9px;font-weight:700;color:#1a1a1a;flex:1;}
+.lar{font-family:'Oswald',sans-serif;font-size:9px;color:#f5a623;}
+
+/* 하단 */
+.manga-foot{
+  background:#1a1a1a;
+  padding:5px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.mf-txt{
+  font-family:'Share Tech Mono',monospace;
+  font-size:7px;letter-spacing:2px;
+  color:rgba(255,255,255,.25);
+  cursor:pointer;
+}
+.mf-txt:hover{color:rgba(245,166,35,.6);}
+.mf-hq{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:10px;color:#f5a623;
+  letter-spacing:1px;
+}
+
+/* egg */
+.egg{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.9);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.egg.show{opacity:1;pointer-events:auto;}
+.egg-box{background:#f5f0e8;border:3px solid #1a1a1a;padding:24px 28px;text-align:center;max-width:220px;width:90%;position:relative;}
+.egg-box::before{content:'';position:absolute;inset:3px;border:1px dashed #ddd8cc;pointer-events:none;}
+.egg-t{font-family:'Black Han Sans',sans-serif;font-size:18px;color:#1a1a1a;margin-bottom:4px;}
+.egg-m{font-size:10px;color:#555;line-height:2;margin-bottom:12px;}
+.egg-c{font-family:'Oswald',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:#aaa;cursor:pointer;background:none;border:none;}
+.egg-c:hover{color:#1a1a1a;}
+</style>
+</head>
+<body>
+<div class="manga-card">
+  <!-- 스피드라인 배경 -->
+  <div class="speed-bg">
+    <svg viewBox="0 0 580 326" preserveAspectRatio="none">
+      <defs>
+        <radialGradient id="sg" cx="42%" cy="50%">
+          <stop offset="0%" stop-color="#f5f0e8"/>
+          <stop offset="100%" stop-color="#e8e3db"/>
+        </radialGradient>
+      </defs>
+      <rect width="580" height="326" fill="url(#sg)"/>
+      <!-- 스피드라인들 -->
+      <g stroke="#1a1a1a" stroke-opacity=".04">
+        <line x1="244" y1="163" x2="580" y2="0"/><line x1="244" y1="163" x2="580" y2="20"/>
+        <line x1="244" y1="163" x2="580" y2="40"/><line x1="244" y1="163" x2="580" y2="60"/>
+        <line x1="244" y1="163" x2="580" y2="80"/><line x1="244" y1="163" x2="580" y2="100"/>
+        <line x1="244" y1="163" x2="580" y2="120"/><line x1="244" y1="163" x2="580" y2="140"/>
+        <line x1="244" y1="163" x2="580" y2="160"/><line x1="244" y1="163" x2="580" y2="180"/>
+        <line x1="244" y1="163" x2="580" y2="200"/><line x1="244" y1="163" x2="580" y2="220"/>
+        <line x1="244" y1="163" x2="580" y2="240"/><line x1="244" y1="163" x2="580" y2="260"/>
+        <line x1="244" y1="163" x2="580" y2="280"/><line x1="244" y1="163" x2="580" y2="300"/>
+        <line x1="244" y1="163" x2="580" y2="326"/>
+        <line x1="244" y1="163" x2="244" y2="0"/><line x1="244" y1="163" x2="200" y2="0"/>
+        <line x1="244" y1="163" x2="160" y2="0"/><line x1="244" y1="163" x2="120" y2="0"/>
+      </g>
+    </svg>
+  </div>
+  <div class="screentone"></div>
+
+  <div class="impact-panel">
+    <div class="sl-lines"></div>
+    <div class="impact-content">
+      <div class="ic-label">ハイキュー!! DREAM</div>
+      <div class="ic-name">YOUR<br>NAME</div>
+      <div class="ic-sub">야치 히토카 드림</div>
+      <div class="ic-pills">
+        <span class="ic-pill accent">성인</span>
+        <span class="ic-pill accent">오픈</span>
+        <span class="ic-pill">반이입</span>
+        <span class="ic-pill">단일</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-panel">
+    <div class="manga-nav">
+      <button class="tab on" data-p="p0">PROFILE</button>
+      <button class="tab"    data-p="p1">STYLE</button>
+      <button class="tab"    data-p="p2">NG</button>
+      <button class="tab"    data-p="p3">LINKS</button>
+    </div>
+
+    <div class="manga-body">
+      <div class="panel on" id="p0">
+        <div class="col-a">
+          <div class="sec-label">ABOUT</div>
+          <div class="body-txt">서사 있어요 ˙ᵕ˙ 언질 주시면 감사해요 🏐</div>
+          <div class="li"><span class="lm lb">○</span><span>1t1d · 맞팔 교류</span></div>
+          <div class="li"><span class="lm lb">○</span><span>비계 연결 환영</span></div>
+          <div class="li"><span class="lm lb">○</span><span>작품 이야기 나누기</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">NG</div>
+          <div class="li"><span class="lm lr">×</span><span>원작 미소비</span></div>
+          <div class="li"><span class="lm lr">×</span><span>드림 지우기</span></div>
+          <div class="li"><span class="lm lr">×</span><span>무단 캡처</span></div>
+          <div class="li"><span class="lm lr">×</span><span>분쟁 유도</span></div>
+          <div style="height:3px"></div>
+          <div class="li"><span class="lm lb">✦</span><span>단일·비교엮기 금지</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p1">
+        <div class="col-a">
+          <div class="sec-label">STATUS</div>
+          <div class="bar"><span class="bl">이입</span><div class="bt"><div class="bf" style="width:70%"></div></div><span class="bv">반이입</span></div>
+          <div class="bar"><span class="bl">오픈</span><div class="bt"><div class="bf" style="width:90%"></div></div><span class="bv">오픈</span></div>
+          <div class="bar"><span class="bl">교류</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv">활발</span></div>
+          <div class="bar"><span class="bl">서사</span><div class="bt"><div class="bf" style="width:95%"></div></div><span class="bv">있음</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">RULE</div>
+          <div class="li"><span class="lm lb">✦</span><span>단일 — 비교·엮기 금지</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>교류 언질 필수</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>무단 캡처·전재 금지</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>원작 미소비 분 사양</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p2">
+        <div class="col-a">
+          <div class="sec-label">NG LIST</div>
+          <div class="ng"><span class="ng-x">×</span><span>드림 지우기 / 비교 언급</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>무단 캡처 · 공유 · 전재</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>혐한 · 정치 · 혐오 발언</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">&nbsp;</div>
+          <div class="ng"><span class="ng-x">×</span><span>미성년자 성적 언급</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>분쟁 유도 계정</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>원작 미소비인 분</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p3">
+        <div class="col-a">
+          <div class="sec-label">LINKS</div>
+          <a class="lnk" href="https://x.com/" target="_blank"><div class="lnk-box">X</div><span class="ltx">Twitter / X</span><span class="lar">▶</span></a>
+          <a class="lnk" href="https://pushoong.com/" target="_blank"><div class="lnk-box">P</div><span class="ltx">Pushoong</span><span class="lar">▶</span></a>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">&nbsp;</div>
+          <a class="lnk" href="https://postype.com/" target="_blank"><div class="lnk-box">PT</div><span class="ltx">Postype</span><span class="lar">▶</span></a>
+          <a class="lnk" href="https://spin-spin.com/" target="_blank"><div class="lnk-box">S</div><span class="ltx">Spin</span><span class="lar">▶</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="manga-foot">
+      <div class="mf-txt" id="egg-t">✦ HQ!! DREAM · 팔로우 전 읽어주세요</div>
+      <div class="mf-hq">飛べ！</div>
+    </div>
+  </div>
+</div>
+
+<div class="egg" id="egg"><div class="egg-box">
+  <div class="egg-t">SPECIAL CHAPTER!</div>
+  <div class="egg-m">여기까지 찾아와 줘서<br>고마워요 ˙ᵕ˙ ♡<br>같이 하이큐!! 드림 즐겨요 🏐</div>
+  <button class="egg-c" onclick="closeEgg()">[ END ]</button>
+</div></div>
+
+<script>
+document.querySelectorAll('.tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.p).classList.add('on');
+  });
+});
+let ec=0,et;
+document.getElementById('egg-t').addEventListener('click',()=>{
+  ec++;clearTimeout(et);et=setTimeout(()=>ec=0,700);
+  if(ec>=3){ec=0;document.getElementById('egg').classList.add('show');}
+});
+function closeEgg(){document.getElementById('egg').classList.remove('show');}
+document.getElementById('egg').addEventListener('click',e=>{if(e.target===document.getElementById('egg'))closeEgg();});
+</script>
+</body>
+</html>
