@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>dream · 유니폼</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh;
+  background:#0e0e14;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 50% 30%,#181824,#080810);
+}
+
+/* 16:9 */
+.jersey-card{
+  position:relative;z-index:1;
+  width:min(580px,calc(100vw - 32px));
+  aspect-ratio:16/9;
+  background:#0c0c18;
+  overflow:hidden;
+  display:flex;
+  border:1px solid rgba(255,255,255,.05);
+  box-shadow:0 24px 80px rgba(0,0,0,.8);
+}
+
+/* 배경 그라디언트 + 체육관 무드 */
+.jersey-card::before{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(135deg,#1a1030 0%,#0c0c18 50%,#0a0818 100%);
+  pointer-events:none;
+}
+/* 코트 라인 그물 패턴 */
+.jersey-card::after{
+  content:'';position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(0deg,transparent 0,transparent 40px,rgba(255,255,255,.018) 40px,rgba(255,255,255,.018) 41px),
+    repeating-linear-gradient(90deg,transparent 0,transparent 60px,rgba(255,255,255,.018) 60px,rgba(255,255,255,.018) 61px);
+  pointer-events:none;z-index:0;
+}
+
+/* 좌측 유니폼 패널 */
+.jersey-left{
+  width:38%;
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:16px 12px;
+  border-right:1px solid rgba(255,255,255,.06);
+  overflow:hidden;
+}
+/* 유니폼 그라디언트 배경 */
+.jersey-left::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(160deg,#1e1040 0%,#140c28 60%,#0c0818 100%);
+}
+/* 굵은 사선 장식 (유니폼 소매 느낌) */
+.sleeve-deco{
+  position:absolute;
+  top:-30px;right:-20px;
+  width:70px;height:150%;
+  background:linear-gradient(180deg,#ff6600 0%,#e05000 100%);
+  transform:rotate(-12deg);
+  opacity:.85;
+}
+.sleeve-deco2{
+  position:absolute;
+  top:-30px;right:30px;
+  width:30px;height:150%;
+  background:linear-gradient(180deg,rgba(255,100,0,.4),rgba(200,60,0,.3));
+  transform:rotate(-12deg);
+}
+
+.jl-content{position:relative;z-index:2;text-align:center;}
+.jl-team{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:4px;
+  color:rgba(255,255,255,.3);
+  margin-bottom:6px;
+}
+.jl-number{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:72px;
+  color:#fff;
+  line-height:.85;
+  text-shadow:0 4px 20px rgba(0,0,0,.5),3px 3px 0 rgba(0,0,0,.3);
+  margin-bottom:4px;
+}
+.jl-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px;font-weight:700;letter-spacing:2px;
+  color:#fff;
+  text-transform:uppercase;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+  margin-bottom:4px;
+}
+.jl-pos{
+  font-family:'Share Tech Mono',monospace;
+  font-size:8px;letter-spacing:2px;
+  color:rgba(255,100,0,.8);
+}
+
+/* 우측 */
+.jersey-right{
+  flex:1;
+  display:flex;flex-direction:column;
+  position:relative;z-index:2;
+}
+
+/* 상단 정보 바 */
+.info-bar{
+  display:flex;align-items:center;gap:0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+  background:rgba(255,255,255,.02);
+}
+.info-chip{
+  flex:1;
+  padding:8px 10px;
+  border-right:1px solid rgba(255,255,255,.05);
+  text-align:center;
+}
+.info-chip:last-child{border-right:none;}
+.ic-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:6px;letter-spacing:2px;
+  color:rgba(255,100,0,.5);
+  margin-bottom:2px;
+}
+.ic-val{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:1px;
+  color:rgba(255,255,255,.8);
+}
+
+/* 탭 */
+.jersey-nav{
+  display:flex;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  flex-shrink:0;
+}
+.tab{
+  flex:1;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  padding:7px 4px;text-align:center;
+  color:rgba(255,255,255,.2);
+  cursor:pointer;border:none;background:none;
+  transition:all .15s;
+  position:relative;
+}
+.tab::before{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:2px;
+  background:#ff6600;
+  transform:scaleX(0);transition:transform .15s;
+}
+.tab.on{color:rgba(255,255,255,.85);}
+.tab.on::before{transform:scaleX(1);}
+
+/* 바디 */
+.jersey-body{
+  flex:1;display:flex;
+  overflow:hidden;min-height:0;
+  padding:10px 14px 10px 10px;
+}
+.col-a{flex:1;padding-right:10px;border-right:1px solid rgba(255,255,255,.04);}
+.col-b{flex:1;padding-left:10px;}
+
+.panel{display:none;} .panel.on{display:contents;}
+
+.sec-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:3px;
+  color:rgba(255,100,0,.6);
+  margin-bottom:5px;
+}
+.body-txt{font-size:9px;color:rgba(255,255,255,.4);line-height:1.85;margin-bottom:5px;}
+.li{
+  display:flex;align-items:flex-start;gap:5px;
+  font-size:9px;color:rgba(255,255,255,.55);
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);line-height:1.4;
+}
+.li:last-child{border-bottom:none;}
+.lm{flex-shrink:0;font-weight:900;margin-top:1px;}
+.lb{color:rgba(255,150,50,.8);}.lr{color:rgba(255,80,80,.7);}
+
+.bar{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.bl{font-family:'Share Tech Mono',monospace;font-size:7px;color:rgba(255,255,255,.25);width:28px;}
+.bt{flex:1;height:3px;background:rgba(255,255,255,.06);overflow:hidden;}
+.bf{height:100%;background:linear-gradient(90deg,rgba(255,100,0,.6),rgba(255,150,50,.9));}
+.bv{font-family:'Share Tech Mono',monospace;font-size:7px;color:rgba(255,100,0,.7);width:28px;text-align:right;}
+
+.ng{
+  display:flex;align-items:flex-start;gap:5px;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:9px;color:rgba(255,255,255,.45);line-height:1.4;
+}
+.ng:last-child{border-bottom:none;}
+.ng-x{color:rgba(255,80,80,.7);font-weight:900;flex-shrink:0;}
+
+.lnk{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  text-decoration:none;cursor:pointer;
+}
+.lnk:last-child{border-bottom:none;}
+.lnk-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,100,0,.6);flex-shrink:0;
+}
+.ltx{font-size:9px;color:rgba(255,255,255,.55);flex:1;}
+.lar{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,100,0,.4);}
+
+/* 하단 */
+.jersey-foot{
+  border-top:1px solid rgba(255,255,255,.04);
+  padding:6px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.jf-txt{
+  font-family:'Share Tech Mono',monospace;
+  font-size:7px;letter-spacing:2px;
+  color:rgba(255,255,255,.15);cursor:pointer;
+}
+.jf-txt:hover{color:rgba(255,100,0,.5);}
+.jf-slogan{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:11px;letter-spacing:2px;
+  color:rgba(255,100,0,.5);
+}
+
+/* egg */
+.egg{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.egg.show{opacity:1;pointer-events:auto;}
+.egg-box{background:#0c0c18;border:1px solid rgba(255,100,0,.3);box-shadow:0 0 30px rgba(255,100,0,.1);padding:28px 32px;text-align:center;max-width:220px;width:90%;}
+.egg-t{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#ff6600;text-shadow:0 0 12px rgba(255,100,0,.4);margin-bottom:6px;}
+.egg-m{font-size:10px;color:rgba(255,255,255,.35);line-height:2.2;margin-bottom:16px;}
+.egg-c{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:rgba(255,100,0,.3);cursor:pointer;background:none;border:none;}
+.egg-c:hover{color:rgba(255,100,0,.7);}
+</style>
+</head>
+<body>
+<div class="jersey-card">
+  <div class="jersey-left">
+    <div class="sleeve-deco"></div>
+    <div class="sleeve-deco2"></div>
+    <div class="jl-content">
+      <div class="jl-team">烏野高校 · KARASUNO</div>
+      <div class="jl-number">13</div>
+      <div class="jl-name">your name</div>
+      <div class="jl-pos">야치 히토카 DREAMER</div>
+    </div>
+  </div>
+
+  <div class="jersey-right">
+    <div class="info-bar">
+      <div class="info-chip"><div class="ic-label">AGE</div><div class="ic-val">성인</div></div>
+      <div class="info-chip"><div class="ic-label">OPEN</div><div class="ic-val">오픈</div></div>
+      <div class="info-chip"><div class="ic-label">MODE</div><div class="ic-val">반이입</div></div>
+      <div class="info-chip"><div class="ic-label">TYPE</div><div class="ic-val">단일</div></div>
+    </div>
+
+    <div class="jersey-nav">
+      <button class="tab on" data-p="p0">PROFILE</button>
+      <button class="tab"    data-p="p1">STYLE</button>
+      <button class="tab"    data-p="p2">NG</button>
+      <button class="tab"    data-p="p3">LINKS</button>
+    </div>
+
+    <div class="jersey-body">
+      <div class="panel on" id="p0">
+        <div class="col-a">
+          <div class="sec-label">ABOUT</div>
+          <div class="body-txt">서사 있어요 ˙ᵕ˙<br>언질 주시면 감사해요 🏐</div>
+          <div class="li"><span class="lm lb">○</span><span>1t1d · 맞팔 교류</span></div>
+          <div class="li"><span class="lm lb">○</span><span>비계 연결 환영</span></div>
+          <div class="li"><span class="lm lb">○</span><span>작품 이야기 나누기</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">CAUTION</div>
+          <div class="li"><span class="lm lr">×</span><span>원작 미소비</span></div>
+          <div class="li"><span class="lm lr">×</span><span>드림 지우기</span></div>
+          <div class="li"><span class="lm lr">×</span><span>무단 캡처</span></div>
+          <div class="li"><span class="lm lr">×</span><span>분쟁 유도</span></div>
+          <div style="height:3px"></div>
+          <div class="li"><span class="lm lb">✦</span><span>단일·비교엮기 금지</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p1">
+        <div class="col-a">
+          <div class="sec-label">STATS</div>
+          <div class="bar"><span class="bl">이입</span><div class="bt"><div class="bf" style="width:70%"></div></div><span class="bv">반이입</span></div>
+          <div class="bar"><span class="bl">오픈</span><div class="bt"><div class="bf" style="width:90%"></div></div><span class="bv">오픈</span></div>
+          <div class="bar"><span class="bl">교류</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv">활발</span></div>
+          <div class="bar"><span class="bl">서사</span><div class="bt"><div class="bf" style="width:95%"></div></div><span class="bv">있음</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">RULE</div>
+          <div class="li"><span class="lm lb">✦</span><span>단일 — 비교·엮기 금지</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>교류 언질 필수</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>무단 캡처·전재 금지</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>원작 미소비 분 사양</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p2">
+        <div class="col-a">
+          <div class="sec-label">NG LIST</div>
+          <div class="ng"><span class="ng-x">×</span><span>드림 지우기 / 비교 언급</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>무단 캡처 · 공유 · 전재</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>혐한 · 정치 · 혐오 발언</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">&nbsp;</div>
+          <div class="ng"><span class="ng-x">×</span><span>미성년자 성적 언급</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>분쟁 유도 계정</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>원작 미소비인 분</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p3">
+        <div class="col-a">
+          <div class="sec-label">LINKS</div>
+          <a class="lnk" href="https://x.com/" target="_blank"><div class="lnk-dot"></div><span class="ltx">Twitter / X</span><span class="lar">→</span></a>
+          <a class="lnk" href="https://pushoong.com/" target="_blank"><div class="lnk-dot"></div><span class="ltx">Pushoong</span><span class="lar">→</span></a>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">&nbsp;</div>
+          <a class="lnk" href="https://postype.com/" target="_blank"><div class="lnk-dot"></div><span class="ltx">Postype</span><span class="lar">→</span></a>
+          <a class="lnk" href="https://spin-spin.com/" target="_blank"><div class="lnk-dot"></div><span class="ltx">Spin</span><span class="lar">→</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="jersey-foot">
+      <div class="jf-txt" id="egg-t">✦ HAIKYUU!! DREAM · 팔로우 전 꼭 읽어주세요</div>
+      <div class="jf-slogan">FLY HIGH!</div>
+    </div>
+  </div>
+</div>
+
+<div class="egg" id="egg"><div class="egg-box">
+  <div class="egg-t">PLAYER UNLOCKED</div>
+  <div class="egg-m">여기까지 찾아와 줘서<br>고마워요 ˙ᵕ˙ ♡<br>같이 하이큐!! 드림 즐겨요 🏐</div>
+  <button class="egg-c" onclick="closeEgg()">[ BENCH ]</button>
+</div></div>
+
+<script>
+document.querySelectorAll('.tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.p).classList.add('on');
+  });
+});
+let ec=0,et;
+document.getElementById('egg-t').addEventListener('click',()=>{
+  ec++;clearTimeout(et);et=setTimeout(()=>ec=0,700);
+  if(ec>=3){ec=0;document.getElementById('egg').classList.add('show');}
+});
+function closeEgg(){document.getElementById('egg').classList.remove('show');}
+document.getElementById('egg').addEventListener('click',e=>{if(e.target===document.getElementById('egg'))closeEgg();});
+</script>
+</body>
+</html>
