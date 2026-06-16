@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>dream · neon</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Black+Han+Sans&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh;
+  background:#060608;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+
+/* 16:9 */
+.neon-card{
+  position:relative;
+  width:min(580px,calc(100vw - 32px));
+  aspect-ratio:16/9;
+  background:#0a080e;
+  overflow:hidden;
+  display:flex;
+}
+/* 벽 텍스처 */
+.neon-card::before{
+  content:'';position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(255,255,255,.008) 2px,rgba(255,255,255,.008) 4px),
+    repeating-linear-gradient(90deg,transparent 0,transparent 40px,rgba(255,255,255,.004) 40px,rgba(255,255,255,.004) 41px);
+  pointer-events:none;z-index:0;
+}
+
+/* 좌측 — 네온 사인 메인 */
+.left-panel{
+  width:42%;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  padding:16px 14px 16px 20px;
+  position:relative;z-index:2;
+  border-right:1px solid rgba(255,255,255,.05);
+}
+
+/* 글로우 헬퍼 */
+@keyframes flicker{0%,100%{opacity:1;}92%{opacity:1;}93%{opacity:.85;}94%{opacity:1;}95%{opacity:.9;}96%{opacity:1;}}
+
+.neon-bar-deco{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:8px;letter-spacing:4px;
+  color:rgba(255,100,180,.4);
+  margin-bottom:10px;
+  text-transform:uppercase;
+}
+.neon-title{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:32px;
+  line-height:.95;
+  margin-bottom:6px;
+  animation:flicker 6s ease-in-out infinite;
+}
+.nt-line1{
+  display:block;
+  color:#ff5090;
+  text-shadow:0 0 8px #ff5090,0 0 20px #ff5090,0 0 40px rgba(255,80,144,.4);
+}
+.nt-line2{
+  display:block;
+  color:#50d8ff;
+  text-shadow:0 0 8px #50d8ff,0 0 20px #50d8ff,0 0 40px rgba(80,216,255,.4);
+  font-size:26px;
+}
+.neon-sub{
+  font-family:'Rajdhani',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:2px;
+  color:rgba(255,255,255,.3);
+  margin-bottom:14px;
+}
+
+/* 배지들 */
+.badge-row{display:flex;flex-direction:column;gap:4px;}
+.badge{
+  font-family:'Rajdhani',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  padding:3px 10px;
+  border-radius:2px;
+  display:inline-block;
+  width:fit-content;
+}
+.b-pink{
+  color:#ff5090;
+  border:1px solid rgba(255,80,144,.4);
+  background:rgba(255,80,144,.06);
+  box-shadow:0 0 8px rgba(255,80,144,.1),inset 0 0 8px rgba(255,80,144,.04);
+  text-shadow:0 0 6px #ff5090;
+}
+.b-cyan{
+  color:#50d8ff;
+  border:1px solid rgba(80,216,255,.35);
+  background:rgba(80,216,255,.05);
+  box-shadow:0 0 8px rgba(80,216,255,.1),inset 0 0 8px rgba(80,216,255,.04);
+  text-shadow:0 0 6px #50d8ff;
+}
+.b-yellow{
+  color:#f0d040;
+  border:1px solid rgba(240,208,64,.3);
+  background:rgba(240,208,64,.04);
+  box-shadow:0 0 8px rgba(240,208,64,.08);
+  text-shadow:0 0 6px #f0d040;
+}
+
+/* 바닥 장식선 */
+.left-bottom-line{
+  position:absolute;bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,80,144,.4),rgba(80,216,255,.4),transparent);
+  box-shadow:0 0 8px rgba(255,80,144,.3);
+}
+
+/* 우측 — 컨텐츠 */
+.right-panel{
+  flex:1;
+  display:flex;flex-direction:column;
+  position:relative;z-index:2;
+  overflow:hidden;
+}
+
+/* 탭 */
+.neon-nav{
+  display:flex;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+  background:rgba(255,255,255,.02);
+}
+.tab{
+  flex:1;
+  font-family:'Rajdhani',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  padding:9px 4px;
+  text-align:center;
+  color:rgba(255,255,255,.2);
+  cursor:pointer;border:none;background:none;
+  transition:all .2s;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+}
+.tab.on{
+  color:#ff5090;
+  border-bottom-color:#ff5090;
+  text-shadow:0 0 8px rgba(255,80,144,.6);
+}
+
+/* 패널 바디 */
+.neon-body{
+  flex:1;
+  display:flex;
+  overflow:hidden;min-height:0;
+  padding:10px 14px 10px 12px;
+}
+.col-a{flex:1;padding-right:10px;border-right:1px solid rgba(255,255,255,.04);}
+.col-b{flex:1;padding-left:10px;}
+
+.panel{display:none;} .panel.on{display:contents;}
+
+.sec-label{
+  font-family:'Rajdhani',sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:3px;
+  color:rgba(80,216,255,.5);
+  margin-bottom:6px;
+  text-shadow:0 0 6px rgba(80,216,255,.3);
+}
+.body-txt{
+  font-size:9px;color:rgba(255,255,255,.4);
+  line-height:1.8;margin-bottom:6px;
+}
+.li{
+  display:flex;align-items:flex-start;gap:5px;
+  font-size:9px;color:rgba(255,255,255,.55);
+  padding:3px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  line-height:1.4;
+}
+.li:last-child{border-bottom:none;}
+.lm{flex-shrink:0;font-weight:700;margin-top:1px;}
+.lb{color:#50d8ff;text-shadow:0 0 6px rgba(80,216,255,.5);}
+.lr{color:#ff5090;text-shadow:0 0 6px rgba(255,80,144,.5);}
+
+.bar{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.bl{font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:600;color:rgba(255,255,255,.3);width:30px;}
+.bt{flex:1;height:3px;background:rgba(255,255,255,.05);overflow:hidden;}
+.bf{height:100%;background:linear-gradient(90deg,rgba(255,80,144,.5),rgba(80,216,255,.8));}
+.bv{font-family:'Rajdhani',sans-serif;font-size:8px;color:rgba(80,216,255,.6);width:28px;text-align:right;}
+
+.ng{
+  display:flex;align-items:flex-start;gap:5px;
+  padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:9px;color:rgba(255,255,255,.5);line-height:1.4;
+}
+.ng:last-child{border-bottom:none;}
+.ng-x{color:#ff5090;font-weight:700;flex-shrink:0;text-shadow:0 0 6px rgba(255,80,144,.5);}
+
+.lnk{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  text-decoration:none;cursor:pointer;
+}
+.lnk:last-child{border-bottom:none;}
+.lnk-sq{
+  width:14px;height:14px;
+  border:1px solid rgba(255,80,144,.35);
+  background:rgba(255,80,144,.06);
+  flex-shrink:0;
+  box-shadow:0 0 5px rgba(255,80,144,.15);
+}
+.ltx{font-size:9px;color:rgba(255,255,255,.55);flex:1;}
+.lar{font-family:'Rajdhani',sans-serif;font-size:9px;color:rgba(255,80,144,.5);}
+
+/* 하단 */
+.neon-foot{
+  border-top:1px solid rgba(255,255,255,.05);
+  padding:6px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.nf-txt{
+  font-family:'Rajdhani',sans-serif;
+  font-size:8px;font-weight:600;letter-spacing:2px;
+  color:rgba(255,255,255,.15);
+  cursor:pointer;
+}
+.nf-txt:hover{color:rgba(255,80,144,.5);}
+.nf-glow{
+  font-family:'Rajdhani',sans-serif;
+  font-size:9px;font-weight:700;
+  color:rgba(240,208,64,.4);
+  letter-spacing:1px;
+  text-shadow:0 0 8px rgba(240,208,64,.3);
+}
+
+/* 배경 글로우 블롭 */
+.glow-blob{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(60px);
+  pointer-events:none;z-index:0;
+}
+.gb1{width:180px;height:180px;background:rgba(255,80,144,.06);top:-40px;left:-30px;}
+.gb2{width:150px;height:150px;background:rgba(80,216,255,.05);bottom:-30px;right:-20px;}
+
+/* egg */
+.egg{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.egg.show{opacity:1;pointer-events:auto;}
+.egg-box{background:#0a080e;border:1px solid rgba(255,80,144,.3);box-shadow:0 0 30px rgba(255,80,144,.1);padding:28px 32px;text-align:center;max-width:220px;width:90%;}
+.egg-t{font-family:'Black Han Sans',sans-serif;font-size:18px;color:#ff5090;text-shadow:0 0 12px #ff5090;margin-bottom:6px;}
+.egg-m{font-size:10px;color:rgba(255,255,255,.4);line-height:2.2;margin-bottom:16px;}
+.egg-c{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:rgba(255,80,144,.35);cursor:pointer;background:none;border:none;}
+.egg-c:hover{color:rgba(255,80,144,.7);}
+</style>
+</head>
+<body>
+<div class="neon-card">
+  <div class="glow-blob gb1"></div>
+  <div class="glow-blob gb2"></div>
+
+  <div class="left-panel">
+    <div class="neon-bar-deco">✦ dream · club</div>
+    <div class="neon-title">
+      <span class="nt-line1">your</span>
+      <span class="nt-line2">name</span>
+    </div>
+    <div class="neon-sub">ハイキュー!! DREAMER</div>
+    <div class="badge-row">
+      <span class="badge b-pink">성인</span>
+      <span class="badge b-cyan">오픈</span>
+      <span class="badge b-yellow">반이입 · 단일</span>
+    </div>
+    <div class="left-bottom-line"></div>
+  </div>
+
+  <div class="right-panel">
+    <div class="neon-nav">
+      <button class="tab on" data-p="p0">PROFILE</button>
+      <button class="tab"    data-p="p1">STYLE</button>
+      <button class="tab"    data-p="p2">NG</button>
+      <button class="tab"    data-p="p3">LINKS</button>
+    </div>
+
+    <div class="neon-body">
+      <div class="panel on" id="p0">
+        <div class="col-a">
+          <div class="sec-label">ABOUT</div>
+          <div class="body-txt">서사 있어요 ˙ᵕ˙<br>언질 주시면 감사해요 🏐</div>
+          <div class="li"><span class="lm lb">○</span><span>1t1d · 맞팔 교류</span></div>
+          <div class="li"><span class="lm lb">○</span><span>비계 연결 환영</span></div>
+          <div class="li"><span class="lm lb">○</span><span>작품 이야기 나누기</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">BLOCK</div>
+          <div class="li"><span class="lm lr">×</span><span>원작 미소비</span></div>
+          <div class="li"><span class="lm lr">×</span><span>드림 지우기</span></div>
+          <div class="li"><span class="lm lr">×</span><span>무단 캡처</span></div>
+          <div class="li"><span class="lm lr">×</span><span>분쟁 유도</span></div>
+          <div style="height:4px"></div>
+          <div class="li"><span class="lm lb">✦</span><span>단일 드림주 비교엮기 금지</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p1">
+        <div class="col-a">
+          <div class="sec-label">SPEC</div>
+          <div class="bar"><span class="bl">이입</span><div class="bt"><div class="bf" style="width:70%"></div></div><span class="bv">반이입</span></div>
+          <div class="bar"><span class="bl">오픈</span><div class="bt"><div class="bf" style="width:90%"></div></div><span class="bv">오픈</span></div>
+          <div class="bar"><span class="bl">교류</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv">활발</span></div>
+          <div class="bar"><span class="bl">서사</span><div class="bt"><div class="bf" style="width:95%"></div></div><span class="bv">있음</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">RULE</div>
+          <div class="li"><span class="lm lb">✦</span><span>단일 드림주 — 비교·엮기 금지</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>교류 언질 필수</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>무단 캡처·전재 금지</span></div>
+          <div class="li"><span class="lm lb">✦</span><span>원작 미소비 분 사양</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p2">
+        <div class="col-a">
+          <div class="sec-label">NG LIST</div>
+          <div class="ng"><span class="ng-x">×</span><span>드림 지우기 / 비교 언급</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>무단 캡처 · 공유 · 전재</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>혐한 · 정치 · 혐오 발언</span></div>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">&nbsp;</div>
+          <div class="ng"><span class="ng-x">×</span><span>미성년자 성적 언급 계정</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>분쟁 유도 계정</span></div>
+          <div class="ng"><span class="ng-x">×</span><span>원작 미소비인 분</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p3">
+        <div class="col-a">
+          <div class="sec-label">LINKS</div>
+          <a class="lnk" href="https://x.com/" target="_blank"><div class="lnk-sq"></div><span class="ltx">Twitter / X</span><span class="lar">→</span></a>
+          <a class="lnk" href="https://pushoong.com/" target="_blank"><div class="lnk-sq"></div><span class="ltx">Pushoong</span><span class="lar">→</span></a>
+        </div>
+        <div class="col-b">
+          <div class="sec-label">&nbsp;</div>
+          <a class="lnk" href="https://postype.com/" target="_blank"><div class="lnk-sq"></div><span class="ltx">Postype</span><span class="lar">→</span></a>
+          <a class="lnk" href="https://spin-spin.com/" target="_blank"><div class="lnk-sq"></div><span class="ltx">Spin</span><span class="lar">→</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="neon-foot">
+      <div class="nf-txt" id="egg-t">✦ HAIKYUU!! DREAM · 팔로우 전 읽어주세요</div>
+      <div class="nf-glow">飛べ！</div>
+    </div>
+  </div>
+</div>
+
+<div class="egg" id="egg"><div class="egg-box">
+  <div class="egg-t">HIDDEN STAGE</div>
+  <div class="egg-m">여기까지 찾아와 줘서<br>고마워요 ˙ᵕ˙ ♡<br>같이 하이큐!! 드림 즐겨요 🏐</div>
+  <button class="egg-c" onclick="closeEgg()">[ EXIT ]</button>
+</div></div>
+
+<script>
+document.querySelectorAll('.tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.p).classList.add('on');
+  });
+});
+let ec=0,et;
+document.getElementById('egg-t').addEventListener('click',()=>{
+  ec++;clearTimeout(et);et=setTimeout(()=>ec=0,700);
+  if(ec>=3){ec=0;document.getElementById('egg').classList.add('show');}
+});
+function closeEgg(){document.getElementById('egg').classList.remove('show');}
+document.getElementById('egg').addEventListener('click',e=>{if(e.target===document.getElementById('egg'))closeEgg();});
+</script>
+</body>
+</html>
