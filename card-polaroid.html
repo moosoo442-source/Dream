@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>dream · polaroid</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Noto+Sans+KR:wght@400;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh;
+  background:#d4c4b0;
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 30% 20%,#c8b89a,transparent 60%),
+    radial-gradient(ellipse at 70% 80%,#b8a88a,transparent 60%),
+    #d4c4b0;
+}
+
+.wrap{position:relative;z-index:1;}
+
+/* 폴라로이드 — 3:4 */
+.photo-card{
+  width:260px;
+  background:#faf8f4;
+  box-shadow:
+    0 2px 0 #e8e0d4,
+    0 4px 0 #d8d0c4,
+    0 8px 32px rgba(0,0,0,.25),
+    0 2px 4px rgba(0,0,0,.15);
+  border-radius:2px;
+  transform:rotate(-1.5deg);
+  position:relative;
+}
+.photo-card::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.4) 0%,transparent 50%);
+  pointer-events:none;border-radius:2px;
+}
+
+/* 사진 영역 */
+.photo-frame{
+  margin:10px 10px 0;
+  height:195px;
+  background:linear-gradient(160deg,#c8d8e8 0%,#b0c4d8 40%,#98b0c8 100%);
+  position:relative;
+  overflow:hidden;
+}
+.photo-frame::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 30% 40%,rgba(255,255,255,.25),transparent 50%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,transparent 8px,
+      rgba(255,255,255,.03) 8px,rgba(255,255,255,.03) 9px
+    );
+}
+.photo-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:flex-end;
+  padding:12px;
+  background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 55%);
+}
+.photo-name{
+  font-family:'Caveat',cursive;
+  font-size:28px;font-weight:700;
+  color:#fff;
+  line-height:1;
+  text-shadow:0 1px 4px rgba(0,0,0,.4);
+}
+.photo-sub{
+  font-family:'Caveat',cursive;
+  font-size:13px;color:rgba(255,255,255,.75);
+  margin-top:2px;
+  letter-spacing:.5px;
+}
+/* 스티커들 */
+.sticker{
+  position:absolute;
+  font-size:18px;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));
+}
+.s1{top:10px;right:12px;transform:rotate(12deg);}
+.s2{top:36px;right:8px;transform:rotate(-8deg);font-size:14px;}
+.s3{top:10px;left:10px;transform:rotate(-10deg);font-size:14px;}
+
+/* 탭 배지들 */
+.badges{
+  display:flex;flex-wrap:wrap;gap:4px;
+  padding:10px 12px 0;
+}
+.badge{
+  font-family:'Caveat',cursive;
+  font-size:11px;font-weight:600;
+  padding:2px 8px;border-radius:99px;
+}
+.b-filled{background:#4a6080;color:#fff;}
+.b-outline{background:transparent;border:1.5px solid #b8a888;color:#7a6848;}
+
+/* 탭 */
+.tabs{
+  display:flex;gap:0;
+  margin:8px 12px 0;
+  border-bottom:1.5px solid #ddd8cc;
+}
+.tab{
+  font-family:'Caveat',cursive;
+  font-size:13px;font-weight:600;
+  padding:6px 10px 5px;
+  color:#aaa098;cursor:pointer;
+  border:none;background:none;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1.5px;
+  transition:all .15s;
+  letter-spacing:.3px;
+}
+.tab.on{color:#3a4858;border-bottom-color:#3a4858;}
+
+/* 바디 패널 */
+.body{padding:8px 12px 14px;min-height:108px;}
+.panel{display:none;} .panel.on{display:block;}
+
+.hand{
+  font-family:'Caveat',cursive;font-size:13px;
+  color:#4a3828;line-height:1.85;
+  margin-bottom:6px;
+}
+.li{
+  display:flex;align-items:flex-start;gap:5px;
+  font-family:'Caveat',cursive;
+  font-size:13px;color:#3a3028;
+  padding:3px 0;
+  border-bottom:1px dashed #e0d8cc;
+  line-height:1.4;
+}
+.li:last-child{border-bottom:none;}
+.lm{flex-shrink:0;font-weight:700;margin-top:1px;}
+.lb{color:#4a6080;}.lr{color:#904040;}
+
+.bar{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.bl{font-family:'Caveat',cursive;font-size:12px;color:#8a7858;width:34px;}
+.bt{flex:1;height:5px;background:#e8e0d4;border-radius:99px;overflow:hidden;}
+.bf{height:100%;background:#4a6080;border-radius:99px;}
+.bv{font-family:'Caveat',cursive;font-size:12px;color:#4a6080;width:32px;text-align:right;}
+
+.ng{
+  display:flex;align-items:flex-start;gap:5px;
+  padding:3px 0;border-bottom:1px dashed #e0d8cc;
+  font-family:'Caveat',cursive;font-size:13px;color:#3a3028;line-height:1.4;
+}
+.ng:last-child{border-bottom:none;}
+.ng-x{color:#904040;font-weight:700;flex-shrink:0;}
+
+.lnk{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 0;border-bottom:1px dashed #e0d8cc;
+  text-decoration:none;cursor:pointer;
+}
+.lnk:last-child{border-bottom:none;}
+.ldot{
+  width:7px;height:7px;border-radius:50%;
+  background:#4a6080;flex-shrink:0;
+}
+.ltx{font-family:'Caveat',cursive;font-size:14px;color:#3a3028;flex:1;}
+.lar{font-family:'Caveat',cursive;font-size:12px;color:#aaa098;}
+
+/* 하단 날짜 */
+.photo-bottom{
+  padding:6px 12px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid #ece8e0;
+}
+.pb-date{
+  font-family:'Reenie Beanie',cursive;
+  font-size:14px;color:#aaa098;
+  letter-spacing:.5px;
+}
+.pb-mark{
+  font-family:'Reenie Beanie',cursive;
+  font-size:13px;color:#c89878;
+}
+
+/* 이스터에그 */
+.egg{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.egg.show{opacity:1;pointer-events:auto;}
+.egg-box{background:#faf8f4;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.3);padding:28px 32px;text-align:center;max-width:220px;width:90%;}
+.egg-t{font-family:'Caveat',cursive;font-size:24px;font-weight:700;color:#3a4858;margin-bottom:4px;}
+.egg-m{font-family:'Caveat',cursive;font-size:15px;color:#6a5848;line-height:1.9;margin-bottom:14px;}
+.egg-c{font-family:'Caveat',cursive;font-size:13px;color:#aaa098;cursor:pointer;background:none;border:none;}
+.egg-c:hover{color:#3a4858;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="photo-card">
+  <div class="photo-frame">
+    <div class="sticker s1">🏐</div>
+    <div class="sticker s2">✨</div>
+    <div class="sticker s3">★</div>
+    <div class="photo-overlay">
+      <div class="photo-name">your name</div>
+      <div class="photo-sub">ハイキュー!! DREAMER</div>
+    </div>
+  </div>
+
+  <div class="badges">
+    <span class="badge b-filled">성인</span>
+    <span class="badge b-filled">오픈</span>
+    <span class="badge b-outline">반이입</span>
+    <span class="badge b-outline">단일</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-p="p0">PROFILE</button>
+    <button class="tab"    data-p="p1">STYLE</button>
+    <button class="tab"    data-p="p2">NG</button>
+    <button class="tab"    data-p="p3">LINKS</button>
+  </div>
+
+  <div class="body">
+    <div class="panel on" id="p0">
+      <div class="hand">서사 있어요 ˙ᵕ˙ 언질 주시면 감사해요!</div>
+      <div class="li"><span class="lm lb">○</span><span>1t1d · 맞팔 교류</span></div>
+      <div class="li"><span class="lm lb">○</span><span>비계 연결 환영</span></div>
+      <div class="li"><span class="lm lb">○</span><span>작품 이야기 나누기</span></div>
+      <div class="li"><span class="lm lr">×</span><span>원작 미소비 · 드림 지우기</span></div>
+      <div class="li"><span class="lm lr">×</span><span>무단 캡처 · 분쟁 유도</span></div>
+    </div>
+    <div class="panel" id="p1">
+      <div class="bar"><span class="bl">이입도</span><div class="bt"><div class="bf" style="width:70%"></div></div><span class="bv">반이입</span></div>
+      <div class="bar"><span class="bl">오픈도</span><div class="bt"><div class="bf" style="width:90%"></div></div><span class="bv">오픈</span></div>
+      <div class="bar"><span class="bl">교류도</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv">활발</span></div>
+      <div class="bar"><span class="bl">서사</span><div class="bt"><div class="bf" style="width:95%"></div></div><span class="bv">있음</span></div>
+      <div class="li" style="margin-top:5px;"><span class="lm lb">✦</span><span>단일 드림주 — 비교·엮기 금지</span></div>
+      <div class="li"><span class="lm lb">✦</span><span>교류 언질 필수</span></div>
+    </div>
+    <div class="panel" id="p2">
+      <div class="ng"><span class="ng-x">×</span><span>드림 지우기 / 비교 언급</span></div>
+      <div class="ng"><span class="ng-x">×</span><span>무단 캡처 · 공유 · 전재</span></div>
+      <div class="ng"><span class="ng-x">×</span><span>혐한 · 정치 · 혐오 발언</span></div>
+      <div class="ng"><span class="ng-x">×</span><span>미성년자 성적 언급 계정</span></div>
+      <div class="ng"><span class="ng-x">×</span><span>분쟁 유도 · 원작 미소비</span></div>
+    </div>
+    <div class="panel" id="p3">
+      <a class="lnk" href="https://x.com/" target="_blank"><div class="ldot"></div><span class="ltx">Twitter / X</span><span class="lar">→</span></a>
+      <a class="lnk" href="https://pushoong.com/" target="_blank"><div class="ldot"></div><span class="ltx">Pushoong</span><span class="lar">→</span></a>
+      <a class="lnk" href="https://postype.com/" target="_blank"><div class="ldot"></div><span class="ltx">Postype</span><span class="lar">→</span></a>
+      <a class="lnk" href="https://spin-spin.com/" target="_blank"><div class="ldot"></div><span class="ltx">Spin</span><span class="lar">→</span></a>
+    </div>
+  </div>
+
+  <div class="photo-bottom" id="egg-t">
+    <div class="pb-date">2025 · HQ dream</div>
+    <div class="pb-mark">✦ 팔로우 전 읽어주세요 ✦</div>
+  </div>
+</div>
+</div>
+
+<div class="egg" id="egg"><div class="egg-box">
+  <div class="egg-t">secret shot 📸</div>
+  <div class="egg-m">여기까지 찾아와 줘서<br>고마워요 ˙ᵕ˙ ♡<br>같이 하이큐!! 드림 즐겨요</div>
+  <button class="egg-c" onclick="closeEgg()">— close —</button>
+</div></div>
+
+<script>
+document.querySelectorAll('.tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.p).classList.add('on');
+  });
+});
+let ec=0,et;
+document.getElementById('egg-t').addEventListener('click',()=>{
+  ec++;clearTimeout(et);et=setTimeout(()=>ec=0,700);
+  if(ec>=3){ec=0;document.getElementById('egg').classList.add('show');}
+});
+function closeEgg(){document.getElementById('egg').classList.remove('show');}
+document.getElementById('egg').addEventListener('click',e=>{if(e.target===document.getElementById('egg'))closeEgg();});
+</script>
+</body>
+</html>
