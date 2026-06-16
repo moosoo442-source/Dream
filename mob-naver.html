@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>NAVER 웹툰 드림카드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:#f5f5f5;
+  min-height:100vh;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:20px 0 40px;
+}
+.card{
+  width:min(390px,100vw);
+  background:#fff;
+  min-height:100vh;
+  position:relative;
+  box-shadow:0 4px 20px rgba(0,0,0,.08);
+}
+
+/* ── 상단 앱바 ── */
+.appbar{
+  background:#fff;
+  height:56px;
+  display:flex;align-items:center;padding:0 16px;
+  border-bottom:1px solid #f0f0f0;
+  position:sticky;top:0;z-index:20;
+  gap:12px;
+}
+.appbar-logo{
+  font-size:15px;font-weight:900;color:#03C75A;
+  letter-spacing:-.5px;
+}
+.appbar-logo span{color:#1a1a1a;}
+.appbar-spacer{flex:1;}
+.appbar-btn{
+  width:32px;height:32px;border-radius:50%;
+  background:#f5f5f5;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;border:none;cursor:pointer;
+}
+
+/* ── 크리에이터 헤더 ── */
+.creator-header{
+  padding:0;
+}
+/* 배너 이미지 영역 */
+.banner{
+  width:100%;height:130px;
+  background:linear-gradient(135deg,#e8f8ee,#c8f0d8,#a8e8c0);
+  position:relative;overflow:hidden;
+}
+.banner::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 20% 60%,rgba(3,199,90,.25),transparent 50%),
+    radial-gradient(circle at 80% 30%,rgba(0,150,255,.1),transparent 50%);
+}
+.banner::after{
+  content:'🏐';position:absolute;right:20px;bottom:-8px;
+  font-size:90px;opacity:.12;
+}
+
+/* 아바타 + 이름 */
+.creator-info{
+  padding:0 16px 12px;
+  position:relative;
+  background:#fff;
+}
+.avatar-wrap{
+  display:flex;align-items:flex-end;
+  margin-top:-32px;margin-bottom:10px;
+  gap:12px;
+}
+.avatar{
+  width:64px;height:64px;
+  border-radius:50%;
+  border:3px solid #fff;
+  background:linear-gradient(135deg,#03C75A,#01a04a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+  flex-shrink:0;
+}
+.follow-btn{
+  margin-left:auto;
+  background:#03C75A;color:#fff;
+  font-size:13px;font-weight:700;
+  padding:8px 20px;border-radius:6px;
+  border:none;cursor:pointer;
+  align-self:flex-end;
+}
+
+.creator-name{font-size:18px;font-weight:900;color:#1a1a1a;margin-bottom:2px;}
+.creator-sub{font-size:12px;color:#999;margin-bottom:10px;}
+
+/* 팔로워 수 */
+.stats-row{
+  display:flex;gap:20px;margin-bottom:12px;
+}
+.stat-item{text-align:center;}
+.stat-n{font-size:15px;font-weight:700;color:#1a1a1a;}
+.stat-l{font-size:11px;color:#999;}
+
+/* 태그 */
+.tags{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px 0;}
+.tag{
+  font-size:11px;font-weight:700;
+  padding:4px 12px;border-radius:99px;
+}
+.t-green{background:#e8fff2;color:#03C75A;border:1px solid #c0f0d8;}
+.t-gray{background:#f5f5f5;color:#666;border:1px solid #e8e8e8;}
+
+/* ── 탭 ── */
+.tabs{
+  display:flex;
+  border-bottom:1px solid #f0f0f0;
+  position:sticky;top:56px;z-index:10;
+  background:#fff;
+  margin-top:10px;
+}
+.tab{
+  flex:1;min-height:48px;
+  font-size:13px;font-weight:700;
+  color:#999;
+  border:none;background:none;cursor:pointer;
+  touch-action:manipulation;
+  position:relative;
+  transition:color .15s;
+}
+.tab.on{color:#03C75A;}
+.tab.on::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:2.5px;
+  background:#03C75A;border-radius:2px 2px 0 0;
+}
+
+/* ── 패널 ── */
+.panel{display:none;padding:16px;animation:fadeIn .2s;}
+.panel.on{display:block;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* 섹션 */
+.section{margin-bottom:18px;}
+.sec-title{
+  font-size:12px;font-weight:700;color:#999;
+  letter-spacing:1px;margin-bottom:10px;
+  padding-bottom:6px;border-bottom:1px solid #f5f5f5;
+}
+
+/* 에피소드 아이템 스타일 info row */
+.ep-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 0;
+  border-bottom:1px solid #f9f9f9;
+  font-size:13px;color:#333;
+  line-height:1.5;
+}
+.ep-item:last-child{border-bottom:none;}
+.ep-num{
+  width:20px;height:20px;border-radius:50%;
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;margin-top:1px;
+}
+.ep-ok{background:#e8fff2;color:#03C75A;}
+.ep-ng{background:#fff0f0;color:#ff4444;}
+
+/* stat */
+.stat-wrap{margin-bottom:14px;}
+.stat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.sl{font-size:12px;color:#999;width:40px;}
+.st{flex:1;height:6px;background:#f0f0f0;border-radius:99px;overflow:hidden;}
+.sf{height:100%;background:#03C75A;border-radius:99px;}
+.sv{font-size:12px;font-weight:700;color:#03C75A;width:38px;text-align:right;}
+
+/* rule */
+.rule-card{
+  background:#f9fff9;border:1px solid #d8f5e4;border-radius:8px;
+  padding:12px;margin-top:12px;
+}
+.rule-item{
+  display:flex;gap:8px;padding:5px 0;
+  border-bottom:1px solid #e8f5ee;
+  font-size:12px;color:#444;line-height:1.5;
+}
+.rule-item:last-child{border-bottom:none;}
+.rd{color:#03C75A;font-weight:700;flex-shrink:0;}
+
+/* ng */
+.ng-card{
+  background:#fff9f9;border:1px solid #ffd8d8;border-radius:8px;
+  padding:10px 12px;margin-bottom:8px;
+  display:flex;gap:8px;font-size:13px;color:#333;line-height:1.5;
+}
+.ng-x{color:#ff4444;font-weight:700;flex-shrink:0;font-size:14px;line-height:1.3;}
+
+/* link */
+.link-list{border-radius:8px;overflow:hidden;border:1px solid #f0f0f0;}
+.link-item{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 14px;
+  border-bottom:1px solid #f5f5f5;
+  text-decoration:none;cursor:pointer;
+  background:#fff;
+  transition:background .12s;
+}
+.link-item:last-child{border-bottom:none;}
+.link-item:active{background:#f9fff9;}
+.link-icon{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;
+}
+.li-x{background:#000;color:#fff;font-weight:900;font-size:11px;}
+.li-p{background:#eee;color:#333;font-size:11px;font-weight:700;}
+.li-pt{background:#1a1a1a;color:#fff;font-size:10px;font-weight:700;}
+.li-s{background:#03C75A;color:#fff;font-size:13px;}
+.link-info{flex:1;}
+.link-name{font-size:13px;font-weight:700;color:#1a1a1a;}
+.link-url{font-size:11px;color:#aaa;}
+.link-arr{color:#03C75A;font-size:16px;}
+
+/* ── 하단 ── */
+.footer{
+  background:#fff;
+  padding:16px;
+  border-top:1px solid #f0f0f0;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:8px;
+}
+.footer-txt{font-size:11px;color:#ccc;cursor:pointer;line-height:1.7;}
+.footer-txt:hover{color:#03C75A;}
+.footer-green{font-size:12px;font-weight:700;color:#03C75A;}
+
+/* 이스터에그 */
+.egg{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.egg.show{opacity:1;pointer-events:auto;}
+.egg-card{background:#fff;border-radius:16px;padding:28px 24px;text-align:center;width:min(280px,80vw);box-shadow:0 12px 40px rgba(0,0,0,.15);}
+.egg-emoji{font-size:40px;margin-bottom:8px;}
+.egg-t{font-size:17px;font-weight:900;color:#03C75A;margin-bottom:6px;}
+.egg-m{font-size:13px;color:#888;line-height:1.9;margin-bottom:18px;}
+.egg-btn{background:#03C75A;color:#fff;font-size:13px;font-weight:700;padding:10px 28px;border-radius:99px;border:none;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="card">
+  <!-- 앱바 -->
+  <div class="appbar">
+    <div class="appbar-logo">NAVER<span> 웹툰</span></div>
+    <div class="appbar-spacer"></div>
+    <button class="appbar-btn">🔔</button>
+    <button class="appbar-btn">☰</button>
+  </div>
+
+  <!-- 크리에이터 헤더 -->
+  <div class="creator-header">
+    <div class="banner"></div>
+    <div class="creator-info">
+      <div class="avatar-wrap">
+        <div class="avatar">🐣</div>
+        <button class="follow-btn">+ 구독</button>
+      </div>
+      <div class="creator-name">your name</div>
+      <div class="creator-sub">야치 히토카 드림 · ハイキュー!!</div>
+      <div class="stats-row">
+        <div class="stat-item"><div class="stat-n">서사○</div><div class="stat-l">서사</div></div>
+        <div class="stat-item"><div class="stat-n">오픈</div><div class="stat-l">오픈여부</div></div>
+        <div class="stat-item"><div class="stat-n">반이입</div><div class="stat-l">이입도</div></div>
+        <div class="stat-item"><div class="stat-n">단일</div><div class="stat-l">드림유형</div></div>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag t-green">성인</span>
+      <span class="tag t-green">오픈</span>
+      <span class="tag t-gray">반이입</span>
+      <span class="tag t-gray">단일</span>
+    </div>
+  </div>
+
+  <!-- 탭 -->
+  <div class="tabs">
+    <button class="tab on" data-i="0">소개</button>
+    <button class="tab" data-i="1">스타일</button>
+    <button class="tab" data-i="2">NG</button>
+    <button class="tab" data-i="3">링크</button>
+  </div>
+
+  <!-- 소개 -->
+  <div class="panel on" id="pn0">
+    <div class="section">
+      <div class="sec-title">드리머 소개</div>
+      <div class="ep-item">
+        <div class="ep-num ep-ok">✓</div>
+        <span>서사 및 관계성 있어요 ˙ᵕ˙ 언질 주시면 감사해요 🏐</span>
+      </div>
+    </div>
+    <div class="section">
+      <div class="sec-title">교류 안내</div>
+      <div class="ep-item"><div class="ep-num ep-ok">○</div><span>1t1d · 맞팔 형태 교류</span></div>
+      <div class="ep-item"><div class="ep-num ep-ok">○</div><span>비계 연결 환영합니다</span></div>
+      <div class="ep-item"><div class="ep-num ep-ok">○</div><span>작품 이야기 나누기</span></div>
+      <div class="ep-item"><div class="ep-num ep-ng">×</div><span style="color:#aaa">원작 미소비 · 드림 지우기</span></div>
+      <div class="ep-item"><div class="ep-num ep-ng">×</div><span style="color:#aaa">무단 캡처 · 분쟁 유도</span></div>
+    </div>
+  </div>
+
+  <!-- 스타일 -->
+  <div class="panel" id="pn1">
+    <div class="section">
+      <div class="sec-title">드림 스타일</div>
+      <div class="stat-wrap">
+        <div class="stat-row"><span class="sl">이입도</span><div class="st"><div class="sf" style="width:70%"></div></div><span class="sv">반이입</span></div>
+        <div class="stat-row"><span class="sl">오픈도</span><div class="st"><div class="sf" style="width:90%"></div></div><span class="sv">오픈</span></div>
+        <div class="stat-row"><span class="sl">교류도</span><div class="st"><div class="sf" style="width:75%"></div></div><span class="sv">활발</span></div>
+        <div class="stat-row"><span class="sl">서사</span><div class="st"><div class="sf" style="width:95%"></div></div><span class="sv">있음</span></div>
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-item"><span class="rd">✦</span><span>단일 드림주 — 비교·엮기 절대 금지</span></div>
+      <div class="rule-item"><span class="rd">✦</span><span>교류 전 언질 필수입니다</span></div>
+      <div class="rule-item"><span class="rd">✦</span><span>무단 캡처·전재 금지</span></div>
+      <div class="rule-item"><span class="rd">✦</span><span>원작 미소비인 분 사양합니다</span></div>
+    </div>
+  </div>
+
+  <!-- NG -->
+  <div class="panel" id="pn2">
+    <div class="sec-title">NG 목록</div>
+    <div class="ng-card"><span class="ng-x">×</span><span>드림 지우기 / 다른 드림 비교 언급</span></div>
+    <div class="ng-card"><span class="ng-x">×</span><span>무단 캡처 · 공유 · 전재</span></div>
+    <div class="ng-card"><span class="ng-x">×</span><span>혐한 · 혐오 · 정치 발언 계정</span></div>
+    <div class="ng-card"><span class="ng-x">×</span><span>미성년자 성적 언급 계정</span></div>
+    <div class="ng-card"><span class="ng-x">×</span><span>분쟁 유도 · 원작 미소비인 분</span></div>
+  </div>
+
+  <!-- 링크 -->
+  <div class="panel" id="pn3">
+    <div class="sec-title">링크</div>
+    <div class="link-list">
+      <a class="link-item" href="https://x.com/" target="_blank">
+        <div class="link-icon li-x">𝕏</div>
+        <div class="link-info"><div class="link-name">Twitter / X</div><div class="link-url">x.com/@yourname</div></div>
+        <span class="link-arr">›</span>
+      </a>
+      <a class="link-item" href="https://pushoong.com/" target="_blank">
+        <div class="link-icon li-p">🐻</div>
+        <div class="link-info"><div class="link-name">Pushoong</div><div class="link-url">pushoong.com</div></div>
+        <span class="link-arr">›</span>
+      </a>
+      <a class="link-item" href="https://postype.com/" target="_blank">
+        <div class="link-icon li-pt">PT</div>
+        <div class="link-info"><div class="link-name">Postype</div><div class="link-url">postype.com</div></div>
+        <span class="link-arr">›</span>
+      </a>
+      <a class="link-item" href="https://spin-spin.com/" target="_blank">
+        <div class="link-icon li-s">🌀</div>
+        <div class="link-info"><div class="link-name">Spin</div><div class="link-url">spin-spin.com</div></div>
+        <span class="link-arr">›</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <div class="footer">
+    <div class="footer-txt" id="egg-trigger">© 2025 HQ DREAM<br>팔로우 전 꼭 읽어주세요</div>
+    <div class="footer-green">🏐 HQ!!</div>
+  </div>
+</div>
+
+<div class="egg" id="egg">
+  <div class="egg-card">
+    <div class="egg-emoji">🏐</div>
+    <div class="egg-t">구독 감사해요!</div>
+    <div class="egg-m">여기까지 찾아와 줘서<br>고마워요 ˙ᵕ˙ ♡<br>같이 하이큐!! 드림 즐겨요</div>
+    <button class="egg-btn" id="egg-close">닫기</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const tabs=document.querySelectorAll('.tab');
+  const panels=document.querySelectorAll('.panel');
+  function activate(i){
+    tabs.forEach(t=>t.classList.remove('on'));
+    panels.forEach(p=>p.classList.remove('on'));
+    tabs[i].classList.add('on');panels[i].classList.add('on');
+  }
+  tabs.forEach((tab,i)=>tab.addEventListener('click',()=>activate(i)));
+  const t=parseInt(new URLSearchParams(location.search).get('t'));
+  if(!isNaN(t)&&t>=0&&t<tabs.length)activate(t);
+  let cnt=0,timer;
+  document.getElementById('egg-trigger').addEventListener('click',()=>{
+    cnt++;clearTimeout(timer);timer=setTimeout(()=>cnt=0,700);
+    if(cnt>=3){cnt=0;document.getElementById('egg').classList.add('show');}
+  });
+  document.getElementById('egg-close').addEventListener('click',()=>document.getElementById('egg').classList.remove('show'));
+  document.getElementById('egg').addEventListener('click',e=>{if(e.target===document.getElementById('egg'))document.getElementById('egg').classList.remove('show');});
+})();
+</script>
+</body>
+</html>
