@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>dream · tarot</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Cinzel:wght@400;600;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh;
+  background:#1a0e28;
+  display:flex;align-items:center;justify-content:center;
+  padding:30px 20px;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,#2a1040,#0e0818);
+}
+
+/* 타로 카드 — 3:4 */
+.tarot{
+  position:relative;z-index:1;
+  width:240px;
+  background:#f8f2e4;
+  box-shadow:
+    0 0 0 8px #1a0e28,
+    0 0 0 10px #c8a840,
+    0 0 0 12px #1a0e28,
+    0 24px 60px rgba(0,0,0,.7);
+  overflow:hidden;
+}
+
+/* 상단 아치 장식 */
+.tarot-top{
+  background:linear-gradient(180deg,#1a0e28 0%,#2a1848 100%);
+  padding:14px 16px 12px;
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+}
+.tarot-top::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 50% -20%,rgba(200,168,64,.25),transparent 60%);
+}
+/* 장식 원 */
+.tarot-top::after{
+  content:'';
+  position:absolute;top:-30px;left:50%;transform:translateX(-50%);
+  width:100px;height:100px;
+  border-radius:50%;
+  border:1px solid rgba(200,168,64,.2);
+  pointer-events:none;
+}
+
+.t-num{
+  font-family:'Cinzel',serif;
+  font-size:9px;letter-spacing:4px;
+  color:rgba(200,168,64,.6);
+  margin-bottom:5px;
+}
+/* SVG 그림 — 간략한 선화 */
+.t-illustration{
+  width:70px;height:70px;
+  margin:0 auto 5px;
+  display:flex;align-items:center;justify-content:center;
+}
+.t-illustration svg{width:100%;height:100%;}
+.t-arcana{
+  font-family:'Cinzel',serif;
+  font-size:13px;font-weight:600;
+  color:#c8a840;
+  letter-spacing:2px;
+  margin-bottom:2px;
+}
+.t-arcana-sub{
+  font-family:'IM Fell English',serif;
+  font-style:italic;font-size:9px;
+  color:rgba(200,168,64,.5);
+  letter-spacing:1px;
+}
+
+/* 프로필 배너 */
+.tarot-banner{
+  background:#c8a840;
+  padding:7px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tb-name{
+  font-family:'Cinzel',serif;
+  font-size:14px;font-weight:600;
+  color:#1a0e28;letter-spacing:.5px;
+}
+.tb-pills{display:flex;gap:3px;}
+.t-pill{
+  font-size:7px;font-weight:700;
+  padding:1px 5px;
+  background:#1a0e28;color:#c8a840;
+  letter-spacing:.5px;
+}
+
+/* 탭 */
+.tarot-tabs{
+  display:flex;
+  background:#2a1848;
+  border-bottom:1px solid rgba(200,168,64,.2);
+}
+.tab{
+  flex:1;
+  font-family:'Cinzel',serif;
+  font-size:7px;letter-spacing:1px;
+  padding:7px 2px;text-align:center;
+  color:rgba(200,168,64,.35);
+  cursor:pointer;border:none;background:none;
+  transition:all .2s;
+}
+.tab.on{color:#c8a840;background:rgba(200,168,64,.08);}
+
+/* 바디 */
+.tarot-body{
+  background:#f8f2e4;
+  padding:10px 14px;
+  min-height:130px;
+  position:relative;
+}
+/* 배경 장식 패턴 */
+.tarot-body::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 10% 10%,rgba(200,168,64,.04) 1px,transparent 1px),
+    radial-gradient(circle at 90% 90%,rgba(200,168,64,.04) 1px,transparent 1px);
+  background-size:20px 20px;
+  pointer-events:none;
+}
+
+.panel{display:none;position:relative;z-index:1;} .panel.on{display:block;}
+
+.body-txt{
+  font-family:'IM Fell English',serif;
+  font-style:italic;font-size:10px;
+  color:#3a2818;line-height:1.85;
+  margin-bottom:7px;
+  padding-bottom:5px;
+  border-bottom:1px solid rgba(200,168,64,.25);
+}
+.li{
+  display:flex;align-items:flex-start;gap:5px;
+  font-size:9px;color:#3a2818;
+  padding:3px 0;
+  border-bottom:1px solid rgba(200,168,64,.15);
+  line-height:1.5;
+}
+.li:last-child{border-bottom:none;}
+.lm{flex-shrink:0;font-weight:700;margin-top:1px;}
+.lb{color:#6a4a10;}.lr{color:#8a2010;}
+
+.bar{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.bl{font-size:8px;color:#8a7050;width:32px;font-weight:700;}
+.bt{flex:1;height:3px;background:rgba(200,168,64,.15);overflow:hidden;}
+.bf{height:100%;background:linear-gradient(90deg,#8a6020,#c8a840);}
+.bv{font-size:8px;color:#8a6020;width:30px;text-align:right;}
+
+.ng{
+  display:flex;align-items:flex-start;gap:5px;
+  padding:3px 0;border-bottom:1px solid rgba(200,168,64,.15);
+  font-size:9px;color:#3a2818;line-height:1.5;
+}
+.ng:last-child{border-bottom:none;}
+.ng-x{color:#8a2010;font-weight:700;flex-shrink:0;}
+
+.lnk{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 0;border-bottom:1px solid rgba(200,168,64,.15);
+  text-decoration:none;cursor:pointer;
+}
+.lnk:last-child{border-bottom:none;}
+.lnk-rune{
+  width:16px;height:16px;
+  background:#2a1848;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:8px;color:#c8a840;
+}
+.ltx{font-size:9px;color:#3a2818;flex:1;}
+.lar{font-size:9px;color:rgba(200,168,64,.5);}
+
+/* 하단 장식 */
+.tarot-foot{
+  background:linear-gradient(0deg,#1a0e28,#2a1848);
+  padding:8px 16px;
+  text-align:center;
+  position:relative;
+}
+.tarot-foot::before{
+  content:'';position:absolute;top:0;left:16px;right:16px;
+  height:1px;background:linear-gradient(90deg,transparent,#c8a840,transparent);
+}
+.tf-text{
+  font-family:'Cinzel',serif;
+  font-size:8px;letter-spacing:2px;
+  color:rgba(200,168,64,.45);
+  cursor:pointer;
+}
+.tf-text:hover{color:rgba(200,168,64,.7);}
+.tf-deco{
+  font-size:10px;color:rgba(200,168,64,.3);
+  margin-bottom:2px;letter-spacing:8px;
+}
+
+/* egg */
+.egg{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.egg.show{opacity:1;pointer-events:auto;}
+.egg-box{background:#f8f2e4;border:2px solid #c8a840;padding:26px 30px;text-align:center;max-width:220px;width:90%;}
+.egg-t{font-family:'Cinzel',serif;font-size:16px;color:#1a0e28;margin-bottom:6px;letter-spacing:2px;}
+.egg-m{font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:#4a3020;line-height:2;margin-bottom:14px;}
+.egg-c{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:#c8a840;cursor:pointer;background:none;border:none;}
+.egg-c:hover{color:#1a0e28;}
+</style>
+</head>
+<body>
+<div class="tarot">
+  <div class="tarot-top">
+    <div class="t-num">ARCANA · XVIII</div>
+    <div class="t-illustration">
+      <svg viewBox="0 0 70 70" fill="none" stroke="#c8a840" stroke-width="1">
+        <!-- 달 + 별 아이콘 -->
+        <circle cx="35" cy="28" r="14" stroke-opacity=".6"/>
+        <path d="M35 14 C28 14 22 20 22 28 C22 36 28 42 35 42 C30 42 24 36 24 28 C24 20 30 14 35 14Z" fill="rgba(200,168,64,.15)" stroke-opacity=".8"/>
+        <circle cx="35" cy="28" r="4" fill="rgba(200,168,64,.2)" stroke-opacity=".5"/>
+        <!-- 작은 별들 -->
+        <g fill="#c8a840" stroke="none">
+          <polygon points="50,12 51.5,16 56,16 52.5,18.5 54,23 50,20.5 46,23 47.5,18.5 44,16 48.5,16" opacity=".7"/>
+          <polygon points="18,48 19,51 22,51 19.5,52.8 20.5,56 18,54.2 15.5,56 16.5,52.8 14,51 17,51" opacity=".5" transform="scale(.7) translate(8,12)"/>
+        </g>
+        <!-- 하단 선 장식 -->
+        <line x1="12" y1="58" x2="58" y2="58" stroke-opacity=".3"/>
+        <line x1="20" y1="54" x2="50" y2="54" stroke-opacity=".2"/>
+      </svg>
+    </div>
+    <div class="t-arcana">THE DREAMER</div>
+    <div class="t-arcana-sub">꿈을 꾸는 자</div>
+  </div>
+
+  <div class="tarot-banner">
+    <div class="tb-name">your name</div>
+    <div class="tb-pills">
+      <span class="t-pill">성인</span>
+      <span class="t-pill">오픈</span>
+    </div>
+  </div>
+
+  <div class="tarot-tabs">
+    <button class="tab on" data-p="p0">FATE</button>
+    <button class="tab"    data-p="p1">POWER</button>
+    <button class="tab"    data-p="p2">SHADOW</button>
+    <button class="tab"    data-p="p3">PATHS</button>
+  </div>
+
+  <div class="tarot-body">
+    <div class="panel on" id="p0">
+      <div class="body-txt">서사 및 관계성 있어요 ˙ᵕ˙ 언질 주시면 감사해요 🏐</div>
+      <div class="li"><span class="lm lb">◈</span><span>1t1d · 맞팔 형태 교류</span></div>
+      <div class="li"><span class="lm lb">◈</span><span>비계 연결 환영</span></div>
+      <div class="li"><span class="lm lb">◈</span><span>작품 이야기 나누기</span></div>
+      <div class="li"><span class="lm lr">✕</span><span>원작 미소비 · 드림 지우기</span></div>
+      <div class="li"><span class="lm lr">✕</span><span>무단 캡처 · 분쟁 유도</span></div>
+    </div>
+    <div class="panel" id="p1">
+      <div class="bar"><span class="bl">이입도</span><div class="bt"><div class="bf" style="width:70%"></div></div><span class="bv">반이입</span></div>
+      <div class="bar"><span class="bl">오픈도</span><div class="bt"><div class="bf" style="width:90%"></div></div><span class="bv">오픈</span></div>
+      <div class="bar"><span class="bl">교류도</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv">활발</span></div>
+      <div class="bar"><span class="bl">서사</span><div class="bt"><div class="bf" style="width:95%"></div></div><span class="bv">있음</span></div>
+      <div class="li" style="margin-top:5px;"><span class="lm lb">◈</span><span>단일 드림주 — 비교·엮기 금지</span></div>
+      <div class="li"><span class="lm lb">◈</span><span>교류 언질 필수</span></div>
+    </div>
+    <div class="panel" id="p2">
+      <div class="ng"><span class="ng-x">✕</span><span>드림 지우기 / 비교 언급</span></div>
+      <div class="ng"><span class="ng-x">✕</span><span>무단 캡처 · 공유 · 전재</span></div>
+      <div class="ng"><span class="ng-x">✕</span><span>혐한 · 정치 · 혐오 발언</span></div>
+      <div class="ng"><span class="ng-x">✕</span><span>미성년자 성적 언급 계정</span></div>
+      <div class="ng"><span class="ng-x">✕</span><span>분쟁 유도 · 원작 미소비</span></div>
+    </div>
+    <div class="panel" id="p3">
+      <a class="lnk" href="https://x.com/" target="_blank"><div class="lnk-rune">✕</div><span class="ltx">Twitter / X</span><span class="lar">→</span></a>
+      <a class="lnk" href="https://pushoong.com/" target="_blank"><div class="lnk-rune">◉</div><span class="ltx">Pushoong</span><span class="lar">→</span></a>
+      <a class="lnk" href="https://postype.com/" target="_blank"><div class="lnk-rune">◈</div><span class="ltx">Postype</span><span class="lar">→</span></a>
+      <a class="lnk" href="https://spin-spin.com/" target="_blank"><div class="lnk-rune">◎</div><span class="ltx">Spin</span><span class="lar">→</span></a>
+    </div>
+  </div>
+
+  <div class="tarot-foot">
+    <div class="tf-deco">· · ·</div>
+    <div class="tf-text" id="egg-t">ハイキュー!! DREAM · 팔로우 전 읽어주세요</div>
+  </div>
+</div>
+
+<div class="egg" id="egg"><div class="egg-box">
+  <div class="egg-t">THE FOOL</div>
+  <div class="egg-m">여기까지 찾아와 줘서<br>고마워요 ˙ᵕ˙ ♡<br>같이 하이큐!! 드림 즐겨요 🏐</div>
+  <button class="egg-c" onclick="closeEgg()">— CLOSE —</button>
+</div></div>
+
+<script>
+document.querySelectorAll('.tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.p).classList.add('on');
+  });
+});
+let ec=0,et;
+document.getElementById('egg-t').addEventListener('click',()=>{
+  ec++;clearTimeout(et);et=setTimeout(()=>ec=0,700);
+  if(ec>=3){ec=0;document.getElementById('egg').classList.add('show');}
+});
+function closeEgg(){document.getElementById('egg').classList.remove('show');}
+document.getElementById('egg').addEventListener('click',e=>{if(e.target===document.getElementById('egg'))closeEgg();});
+</script>
+</body>
+</html>
