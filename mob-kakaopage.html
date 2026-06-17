@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>kakaopage</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   page.kakao.com 실제 UI 재현
+   배경: #101828 (다크 네이비)
+   CTA: #F7C900 (카카오 옐로우)
+   폰트: Pretendard
+   ══════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{
+  font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  font-size:16px;
+  background:#101828;
+  min-height:100dvh;
+  display:flex;align-items:flex-start;justify-content:center;
+}
+
+.w{
+  width:min(390px,100vw);
+  background:#101828;
+  min-height:100dvh;
+  position:relative;
+  overflow-x:hidden;
+  padding-bottom:72px;
+}
+
+/* ══ 상단 NAV ══ */
+.nav{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:min(390px,100vw);
+  height:50px;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 8px;
+  background:transparent;
+  transition:background .25s;
+}
+.nav.solid{background:rgba(16,24,40,.97);backdrop-filter:blur(12px);}
+.nav-l{display:flex;align-items:center;gap:2px;}
+.nav-back{
+  width:40px;height:50px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;color:#fff;cursor:pointer;
+  font-weight:300;line-height:1;
+}
+/* kakaopage 로고 */
+.nav-logo{
+  font-size:15px;font-weight:700;
+  color:#fff;letter-spacing:-.3px;
+  opacity:0;transition:opacity .2s;
+}
+.nav.solid .nav-logo{opacity:1;}
+.nav-r{display:flex;align-items:center;}
+.nav-btn{
+  width:40px;height:50px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:rgba(255,255,255,.9);
+  cursor:pointer;border:none;background:none;
+  touch-action:manipulation;
+}
+
+/* ══ HERO (커버 + 블러 배경) ══ */
+.hero{
+  position:relative;
+  width:100%;
+  padding-top:50px; /* nav height */
+  min-height:340px;
+  overflow:hidden;
+}
+/* 블러 그라디언트 배경 — JS로 커버 이미지 색상 기반 적용 */
+.hero-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, #1e2939 0%, #101828 100%);
+  background-size:cover;background-position:center;
+}
+.hero-bg-img{
+  position:absolute;inset:-40px;
+  background-size:cover;background-position:center;
+  filter:blur(30px) brightness(.4) saturate(1.3);
+  opacity:0;transition:opacity .5s;
+}
+.hero-bg-img.loaded{opacity:1;}
+/* 하단 그라디언트 오버레이 */
+.hero-fade{
+  position:absolute;bottom:0;left:0;right:0;
+  height:120px;
+  background:linear-gradient(transparent,#101828);
+  z-index:1;
+}
+.hero-inner{
+  position:relative;z-index:2;
+  display:flex;justify-content:center;
+  padding:28px 0 20px;
+}
+.cover-wrap{
+  position:relative;
+  width:148px;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.7);
+}
+.cover{
+  width:100%;aspect-ratio:3/4;
+  object-fit:cover;display:block;
+  background:linear-gradient(160deg,#1e2939,#364153,#101828);
+}
+/* 무료 배지 on cover */
+.cover-badge{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.7));
+  padding:20px 8px 7px;
+  display:flex;justify-content:center;
+}
+.free-pill{
+  font-size:10px;font-weight:700;
+  padding:2px 10px;border-radius:99px;
+  background:#F7C900;color:#0d0d0d;
+  letter-spacing:.3px;
+}
+
+/* ══ 작품 정보 ══ */
+.info{
+  position:relative;z-index:3;
+  padding:0 16px;
+  margin-top:-4px;
+}
+.info-category{
+  font-size:11px;font-weight:600;
+  color:#6a7282;letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:6px;
+}
+.info-title{
+  font-size:22px;font-weight:800;
+  color:#fff;line-height:1.25;
+  margin-bottom:6px;letter-spacing:-.3px;
+}
+.info-author{
+  font-size:13px;color:#6a7282;margin-bottom:12px;
+}
+.info-author strong{color:#d1d5dc;font-weight:600;cursor:pointer;}
+.info-author strong:active{opacity:.7;}
+
+/* 통계 행 */
+.info-stats{
+  display:flex;align-items:center;gap:0;
+  margin-bottom:12px;
+}
+.stat-item{
+  display:flex;align-items:center;gap:4px;
+  font-size:12px;color:#6a7282;
+  padding:0 10px;
+  border-right:1px solid #364153;
+}
+.stat-item:first-child{padding-left:0;}
+.stat-item:last-child{border-right:none;}
+.stat-val{font-weight:600;color:#d1d5dc;}
+
+/* 장르 칩 */
+.genres{
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+  padding-bottom:2px;margin-bottom:16px;
+}
+.genres::-webkit-scrollbar{display:none;}
+.genre{
+  white-space:nowrap;flex-shrink:0;
+  font-size:11px;font-weight:600;
+  padding:4px 12px;border-radius:6px;
+  background:#1e2939;color:#8e8f9a;
+  border:1px solid #364153;
+}
+.genre.h{background:rgba(247,201,0,.08);color:#F7C900;border-color:rgba(247,201,0,.2);}
+
+/* ══ 기다리면 무료 섹션 ══ */
+.wait-free{
+  margin:0 16px 14px;
+  background:#1e2939;
+  border-radius:10px;
+  border:1px solid #364153;
+  overflow:hidden;
+}
+.wf-inner{
+  display:flex;align-items:center;
+  padding:12px 14px;gap:12px;
+  cursor:pointer;touch-action:manipulation;
+}
+.wf-inner:active{background:rgba(247,201,0,.04);}
+.wf-icon{
+  width:40px;height:40px;flex-shrink:0;
+  background:rgba(247,201,0,.1);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+.wf-text{flex:1;}
+.wf-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
+.wf-sub{font-size:11px;color:#6a7282;}
+.wf-arrow{font-size:18px;color:#F7C900;}
+.wf-divider{height:1px;background:#364153;margin:0 14px;}
+.wf-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;
+}
+.wf-ep{font-size:12px;color:#8e8f9a;}
+.wf-ep strong{color:#d1d5dc;}
+.wf-timer{font-size:12px;font-weight:700;color:#F7C900;}
+
+/* ══ 액션 버튼 ══ */
+.actions{
+  display:flex;gap:8px;
+  padding:0 16px 16px;
+}
+.btn{
+  flex:1;height:44px;border-radius:8px;
+  font-size:14px;font-weight:700;
+  font-family:inherit;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  touch-action:manipulation;transition:filter .12s;
+  letter-spacing:-.2px;
+}
+.btn:active{filter:brightness(.85);}
+.btn-primary{background:#F7C900;color:#0d0d0d;}
+.btn-outline{background:#1e2939;color:#d1d5dc;border:1px solid #364153;}
+.btn-icon{width:44px;flex:none;font-size:18px;background:#1e2939;border:1px solid #364153;color:#8e8f9a;}
+
+/* ══ 구분선 ══ */
+.divider{height:6px;background:#0a1020;}
+
+/* ══ 탭 ══ */
+.tabs{
+  position:sticky;top:50px;z-index:150;
+  display:flex;
+  background:#101828;
+  border-bottom:1px solid #1e2939;
+}
+.tab{
+  flex:1;height:46px;
+  font-size:13px;font-weight:700;
+  font-family:inherit;
+  color:#6a7282;
+  border:none;background:none;cursor:pointer;
+  touch-action:manipulation;
+  position:relative;transition:color .15s;
+  letter-spacing:-.1px;
+}
+.tab.on{color:#fff;}
+.tab.on::after{
+  content:'';position:absolute;
+  bottom:0;left:20%;width:60%;height:2px;
+  background:#F7C900;border-radius:2px 2px 0 0;
+}
+
+/* ══ 패널 ══ */
+.panel{display:none;animation:fin .2s;}
+.panel.on{display:block;}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+
+/* ══ 소개 패널 ══ */
+.sec{padding:16px 16px 14px;border-bottom:1px solid #1e2939;}
+.sec-label{
+  font-size:11px;font-weight:700;
+  color:#4a5565;letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.synopsis{
+  font-size:14px;color:#8e8f9a;line-height:1.85;
+}
+.synopsis.clamp{
+  overflow:hidden;display:-webkit-box;
+  -webkit-line-clamp:3;-webkit-box-orient:vertical;
+}
+.see-more{
+  font-size:13px;font-weight:700;color:#F7C900;
+  cursor:pointer;display:inline-block;margin-top:6px;
+}
+
+/* 작가 카드 */
+.author-card{
+  margin:12px 16px 0;
+  background:#1e2939;border-radius:10px;
+  border:1px solid #364153;
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;cursor:pointer;
+  touch-action:manipulation;
+}
+.author-card:active{background:#253347;}
+.ac-avatar{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#F7C900,#eab300);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+.ac-info{flex:1;}
+.ac-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
+.ac-sub{font-size:11px;color:#6a7282;}
+.ac-arrow{font-size:20px;color:#364153;}
+
+/* 메타 테이블 */
+.meta-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid #1e2939;font-size:13px;
+}
+.meta-row:last-child{border-bottom:none;}
+.mk{color:#6a7282;}
+.mv{color:#d1d5dc;font-weight:500;}
+.mv.ok{color:#05df72;}
+.mv.bad{color:#ff6568;}
+
+/* ══ 회차 패널 ══ */
+.ep-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:1px solid #1e2939;
+}
+.ep-count{font-size:13px;font-weight:700;color:#d1d5dc;}
+.ep-sort{
+  background:none;border:1px solid #364153;
+  color:#8e8f9a;font-size:11px;font-weight:600;
+  font-family:inherit;
+  padding:4px 10px;border-radius:5px;cursor:pointer;
+}
+
+.ep-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+  border-bottom:1px solid #1e2939;
+  cursor:pointer;touch-action:manipulation;
+  transition:background .1s;
+}
+.ep-item:active{background:rgba(247,201,0,.04);}
+/* 에피소드 썸네일 */
+.ep-thumb{
+  width:64px;height:86px;
+  border-radius:5px;flex-shrink:0;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
+  background:#1e2939;border:1px solid #364153;
+}
+.ep-info{flex:1;min-width:0;}
+.ep-num{font-size:11px;font-weight:700;color:#F7C900;margin-bottom:3px;}
+.ep-title{
+  font-size:14px;font-weight:700;color:#fff;
+  margin-bottom:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ep-meta{font-size:11px;color:#6a7282;margin-bottom:6px;}
+.ep-badges{display:flex;gap:5px;flex-wrap:wrap;}
+.epb{
+  font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:4px;
+}
+.epb-free{background:rgba(247,201,0,.1);color:#F7C900;border:1px solid rgba(247,201,0,.2);}
+.epb-new{background:rgba(5,223,114,.08);color:#05df72;border:1px solid rgba(5,223,114,.15);}
+.ep-arrow{font-size:18px;color:#364153;flex-shrink:0;}
+
+/* ══ 댓글 패널 ══ */
+.comment-item{
+  padding:14px 16px;border-bottom:1px solid #1e2939;
+}
+.cm-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.cm-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:#1e2939;border:1px solid #364153;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.cm-name{font-size:13px;font-weight:600;color:#d1d5dc;}
+.cm-date{font-size:11px;color:#4a5565;margin-left:auto;}
+.cm-text{font-size:13px;color:#8e8f9a;line-height:1.7;}
+.cm-likes{
+  font-size:11px;color:#6a7282;
+  margin-top:6px;display:flex;align-items:center;gap:4px;
+}
+
+/* ══ 하단 NAV ══ */
+.bottom-nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:min(390px,100vw);height:64px;
+  background:#0a1020;border-top:1px solid #1e2939;
+  display:flex;z-index:200;
+}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;touch-action:manipulation;
+}
+.bn-icon{font-size:21px;color:#4a5565;}
+.bn-icon.on{color:#F7C900;}
+.bn-label{font-size:10px;color:#4a5565;font-weight:600;letter-spacing:.1px;}
+.bn-label.on{color:#F7C900;}
+
+/* ══ 오버레이 + 바텀시트 ══ */
+.overlay{
+  position:fixed;inset:0;z-index:499;
+  background:rgba(0,0,0,.75);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+.overlay.show{opacity:1;pointer-events:auto;}
+
+.sheet{
+  position:fixed;
+  bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
+  width:min(390px,100vw);z-index:500;
+  transition:transform .35s cubic-bezier(.32,.72,0,1);
+  background:#1e2939;
+  border-radius:16px 16px 0 0;
+  max-height:88dvh;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.sheet.open{transform:translateX(-50%) translateY(0);}
+
+.sheet-handle{
+  display:flex;align-items:center;justify-content:center;
+  padding:12px 0 0;
+  position:sticky;top:0;background:#1e2939;z-index:5;
+}
+.hbar{width:36px;height:4px;border-radius:99px;background:#364153;}
+.sheet-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px 10px;
+  border-bottom:1px solid #364153;
+  position:sticky;top:28px;background:#1e2939;z-index:5;
+}
+.sheet-title{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.sheet-ep{
+  font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:99px;
+  background:rgba(247,201,0,.1);color:#F7C900;
+  border:1px solid rgba(247,201,0,.2);
+}
+.sheet-close{
+  font-size:20px;color:#4a5565;cursor:pointer;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+}
+.sc{padding:16px;}
+
+/* 바텀시트 내 컴포넌트 */
+.sc-intro{
+  font-size:14px;color:#8e8f9a;line-height:1.85;
+  padding:12px 14px;margin-bottom:14px;
+  background:#101828;border-radius:8px;
+  border-left:3px solid #F7C900;
+}
+.sc-sl{font-size:11px;font-weight:700;color:#4a5565;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.sc-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid #364153;font-size:13px;
+}
+.sc-row:last-child{border-bottom:none;}
+.sc-k{color:#6a7282;}
+.sc-v{color:#d1d5dc;font-weight:600;}
+.sc-v.ok{color:#05df72;}
+.sc-v.bad{color:#ff6568;}
+.sc-stat{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #364153;}
+.sc-stat:last-child{border-bottom:none;}
+.sc-sl2{font-size:12px;color:#6a7282;width:56px;flex-shrink:0;}
+.sc-sb{flex:1;height:5px;background:#364153;border-radius:99px;overflow:hidden;}
+.sc-sf{height:100%;background:#F7C900;border-radius:99px;}
+.sc-sv{font-size:12px;font-weight:700;color:#F7C900;width:48px;text-align:right;}
+.sc-rule{
+  display:flex;gap:8px;padding:9px 0;border-bottom:1px solid #364153;
+  font-size:13px;color:#8e8f9a;line-height:1.6;
+}
+.sc-rule:last-child{border-bottom:none;}
+.sc-rd{color:#F7C900;flex-shrink:0;font-size:15px;}
+.sc-ng{
+  display:flex;gap:10px;
+  padding:10px 12px;margin-bottom:6px;
+  background:rgba(255,101,104,.04);
+  border:1px solid rgba(255,101,104,.12);
+  border-radius:8px;
+  font-size:13px;color:#8e8f9a;line-height:1.5;
+}
+.sc-nx{
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(255,101,104,.1);
+  color:#ff6568;font-size:11px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:2px;
+}
+.sc-link{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 0;border-bottom:1px solid #364153;
+  cursor:pointer;touch-action:manipulation;
+}
+.sc-link:last-child{border-bottom:none;}
+.sc-link:active{opacity:.7;}
+.sc-li{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;flex-shrink:0;
+}
+.scli-x{background:rgba(255,255,255,.06);}
+.scli-p{background:rgba(247,201,0,.08);}
+.scli-pt{background:rgba(100,80,200,.08);}
+.scli-s{background:rgba(5,223,114,.07);}
+.sc-ln{font-size:13px;font-weight:700;color:#fff;flex:1;}
+.sc-la{font-size:18px;color:#364153;}
+
+/* 이스터에그 */
+.egg{
+  position:fixed;inset:0;z-index:999;
+  background:rgba(0,0,0,.9);backdrop-filter:blur(20px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.egg.show{opacity:1;pointer-events:auto;}
+.egg-card{
+  background:#1e2939;border-radius:16px;
+  border:1px solid rgba(247,201,0,.2);
+  padding:32px 24px;text-align:center;width:min(280px,80vw);
+}
+.egg-t{font-size:17px;font-weight:800;color:#F7C900;margin-bottom:8px;}
+.egg-m{font-size:13px;color:#6a7282;line-height:1.9;margin-bottom:20px;}
+.egg-btn{
+  background:#F7C900;color:#0d0d0d;font-size:14px;font-weight:700;
+  font-family:inherit;
+  padding:12px 28px;border-radius:8px;border:none;cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="w" id="wrap">
+
+  <!-- ══ 네비게이션 ══ -->
+  <nav class="nav" id="nav">
+    <div class="nav-l">
+      <div class="nav-back">‹</div>
+      <div class="nav-logo">kakaopage</div>
+    </div>
+    <div class="nav-r">
+      <button class="nav-btn">🔍</button>
+      <button class="nav-btn">⋯</button>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-bg-img" id="heroBgImg"></div>
+    <div class="hero-fade"></div>
+    <div class="hero-inner">
+      <div class="cover-wrap">
+        <!-- ★ JS COVER_IMG 상수에 이미지 URL 입력 -->
+        <img class="cover" id="coverImg" src=""
+          onerror="this.src='';this.style.background='linear-gradient(160deg,#1e2939,#364153)'"
+          alt="cover">
+        <div class="cover-badge">
+          <span class="free-pill">무료</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 작품 정보 ══ -->
+  <div class="info">
+    <div class="info-category">웹툰 · 드림 · 하이큐!!</div>
+    <div class="info-title">your name</div>
+    <div class="info-author">원작&nbsp; <strong onclick="openSheet('profile')">your name</strong>&nbsp; 작가</div>
+    <div class="info-stats">
+      <div class="stat-item">
+        <span>★</span><span class="stat-val">9.9</span>
+      </div>
+      <div class="stat-item">
+        <span>👁</span><span class="stat-val">—</span>
+      </div>
+      <div class="stat-item">
+        <span>♡</span><span class="stat-val">—</span>
+      </div>
+    </div>
+    <div class="genres">
+      <span class="genre h">하이큐!!</span>
+      <span class="genre h">성인</span>
+      <span class="genre">오픈</span>
+      <span class="genre">반이입</span>
+      <span class="genre">단일</span>
+      <span class="genre">서사○</span>
+      <span class="genre">드림</span>
+    </div>
+  </div>
+
+  <!-- ══ 기다리면 무료 ══ -->
+  <div class="wait-free" onclick="openSheet('profile')">
+    <div class="wf-inner">
+      <div class="wf-icon">⏳</div>
+      <div class="wf-text">
+        <div class="wf-title">기다리면 무료</div>
+        <div class="wf-sub">매일 1화씩 무료로 감상</div>
+      </div>
+      <div class="wf-arrow">›</div>
+    </div>
+    <div class="wf-divider"></div>
+    <div class="wf-row">
+      <span class="wf-ep">현재 무료 <strong>제1화</strong></span>
+      <span class="wf-timer">⏰ 내일 무료</span>
+    </div>
+  </div>
+
+  <!-- ══ 액션 버튼 ══ -->
+  <div class="actions">
+    <button class="btn btn-primary" onclick="openSheet('p0')">소장</button>
+    <button class="btn btn-outline" onclick="openSheet('profile')">작가 정보</button>
+    <button class="btn btn-icon">🔔</button>
+    <button class="btn btn-icon" id="shareBtn">⋯</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ 탭 ══ -->
+  <div class="tabs">
+    <button class="tab on" data-i="0">소개</button>
+    <button class="tab" data-i="1">회차</button>
+    <button class="tab" data-i="2">댓글</button>
+  </div>
+
+  <!-- ────── 소개 패널 ────── -->
+  <div class="panel on" id="pn0">
+    <div class="sec">
+      <div class="sec-label">줄거리</div>
+      <div class="synopsis clamp" id="synEl">
+        배구부의 매니저, 야치 히토카. 작은 체구에 겁쟁이 같아 보여도 팀원들 곁에서 묵묵히 성장해 가는 인물. 그 서사와 관계성 안에서 펼쳐지는 이야기…
+      </div>
+      <span class="see-more" id="synMore" onclick="toggleSyn()">더보기 ▾</span>
+    </div>
+
+    <div class="author-card" onclick="openSheet('profile')">
+      <div class="ac-avatar">🐣</div>
+      <div class="ac-info">
+        <div class="ac-name">your name</div>
+        <div class="ac-sub">작가 정보 · 교류 안내 · 드림카드</div>
+      </div>
+      <div class="ac-arrow">›</div>
+    </div>
+
+    <div class="sec" style="margin-top:8px;">
+      <div class="sec-label">기본 정보</div>
+      <div class="meta-row"><span class="mk">원작</span><span class="mv">ハイキュー!! (古舘春一)</span></div>
+      <div class="meta-row"><span class="mk">드림주</span><span class="mv">야치 히토카</span></div>
+      <div class="meta-row"><span class="mk">오픈 여부</span><span class="mv ok">오픈</span></div>
+      <div class="meta-row"><span class="mk">이입 방식</span><span class="mv">반이입</span></div>
+      <div class="meta-row"><span class="mk">연령</span><span class="mv">성인</span></div>
+      <div class="meta-row"><span class="mk">원작 미소비</span><span class="mv bad">사양</span></div>
+    </div>
+  </div>
+
+  <!-- ────── 회차 패널 ────── -->
+  <div class="panel" id="pn1">
+    <div class="ep-head">
+      <span class="ep-count">총 4화 · 전화 무료</span>
+      <button class="ep-sort">최신순 ▾</button>
+    </div>
+
+    <div class="ep-item" onclick="openSheet('p0')">
+      <div class="ep-thumb">🐣</div>
+      <div class="ep-info">
+        <div class="ep-num">제1화</div>
+        <div class="ep-title">PROFILE — 드리머 소개</div>
+        <div class="ep-meta">2025.06.16</div>
+        <div class="ep-badges">
+          <span class="epb epb-free">무료</span>
+          <span class="epb epb-new">NEW</span>
+        </div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </div>
+
+    <div class="ep-item" onclick="openSheet('p1')">
+      <div class="ep-thumb">📊</div>
+      <div class="ep-info">
+        <div class="ep-num">제2화</div>
+        <div class="ep-title">STYLE — 드림 스타일 · 규칙</div>
+        <div class="ep-meta">2025.06.16</div>
+        <div class="ep-badges"><span class="epb epb-free">무료</span></div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </div>
+
+    <div class="ep-item" onclick="openSheet('p2')">
+      <div class="ep-thumb">🚫</div>
+      <div class="ep-info">
+        <div class="ep-num">제3화</div>
+        <div class="ep-title">NG — 비교류 목록</div>
+        <div class="ep-meta">2025.06.16</div>
+        <div class="ep-badges"><span class="epb epb-free">무료</span></div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </div>
+
+    <div class="ep-item" onclick="openSheet('p3')">
+      <div class="ep-thumb">🔗</div>
+      <div class="ep-info">
+        <div class="ep-num">제4화</div>
+        <div class="ep-title">LINKS — 링크 모음</div>
+        <div class="ep-meta">2025.06.16</div>
+        <div class="ep-badges"><span class="epb epb-free">무료</span></div>
+      </div>
+      <div class="ep-arrow">›</div>
+    </div>
+  </div>
+
+  <!-- ────── 댓글 패널 ────── -->
+  <div class="panel" id="pn2">
+    <div class="comment-item">
+      <div class="cm-head">
+        <div class="cm-avatar">🏐</div>
+        <div class="cm-name">하이큐팬</div>
+        <div class="cm-date">2025.06.16</div>
+      </div>
+      <div class="cm-text">팔로우 전 카드 꼭 읽어주세요! 서사 있고 교류 활발하게 하시는 분이에요 ˙ᵕ˙ ♡</div>
+      <div class="cm-likes">👍 12</div>
+    </div>
+    <div class="comment-item">
+      <div class="cm-head">
+        <div class="cm-avatar">✨</div>
+        <div class="cm-name">드림러</div>
+        <div class="cm-date">2025.06.16</div>
+      </div>
+      <div class="cm-text">1t1d 맞팔 환영! NG랑 링크는 3·4화에서 확인하고 연락주세요</div>
+      <div class="cm-likes">👍 8</div>
+    </div>
+    <div class="comment-item">
+      <div class="cm-head">
+        <div class="cm-avatar">🌟</div>
+        <div class="cm-name" id="eggTrigger" style="cursor:pointer">야치드리머</div>
+        <div class="cm-date">2025.06.16</div>
+      </div>
+      <div class="cm-text">비계 연결도 환영이래요 🏐 링크 4화에 있어요!</div>
+      <div class="cm-likes">👍 5</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 하단 NAV -->
+<div class="bottom-nav">
+  <div class="bn-item"><div class="bn-icon">🏠</div><div class="bn-label">홈</div></div>
+  <div class="bn-item"><div class="bn-icon on">🔍</div><div class="bn-label on">검색</div></div>
+  <div class="bn-item"><div class="bn-icon">📚</div><div class="bn-label">보관함</div></div>
+  <div class="bn-item"><div class="bn-icon">👤</div><div class="bn-label">MY</div></div>
+</div>
+
+<!-- 오버레이 -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- ══ 바텀시트 — 작가 PROFILE ══ -->
+<div class="sheet" id="sheet-profile">
+  <div class="sheet-handle"><div class="hbar"></div></div>
+  <div class="sheet-head">
+    <div class="sheet-title">드리머 소개</div>
+    <span class="sheet-ep">작가 정보</span>
+    <div class="sheet-close" onclick="closeSheet()">✕</div>
+  </div>
+  <div class="sc">
+    <div class="sc-intro">서사 및 관계성 있어요 ˙ᵕ˙ ♡<br>팔로우·교류 전에 언질 주시면 감사해요 🏐</div>
+    <div class="sc-sl">교류 안내</div>
+    <div class="sc-row"><span class="sc-k">교류 형태</span><span class="sc-v">1t1d · 맞팔</span></div>
+    <div class="sc-row"><span class="sc-k">비계 연결</span><span class="sc-v ok">환영</span></div>
+    <div class="sc-row"><span class="sc-k">작품 이야기</span><span class="sc-v ok">환영</span></div>
+    <div class="sc-row"><span class="sc-k">원작 미소비</span><span class="sc-v bad">사양</span></div>
+    <div class="sc-row"><span class="sc-k">드림 지우기</span><span class="sc-v bad">NG</span></div>
+    <div class="sc-row"><span class="sc-k">무단 캡처</span><span class="sc-v bad">NG</span></div>
+    <br>
+    <div class="sc-sl">기본 정보</div>
+    <div class="sc-row"><span class="sc-k">드림주</span><span class="sc-v">야치 히토카</span></div>
+    <div class="sc-row"><span class="sc-k">오픈</span><span class="sc-v ok">오픈</span></div>
+    <div class="sc-row"><span class="sc-k">이입 방식</span><span class="sc-v">반이입</span></div>
+    <div class="sc-row"><span class="sc-k">유형</span><span class="sc-v">단일</span></div>
+    <div class="sc-row"><span class="sc-k">연령</span><span class="sc-v">성인</span></div>
+  </div>
+</div>
+
+<!-- 제1화 PROFILE -->
+<div class="sheet" id="sheet-p0">
+  <div class="sheet-handle"><div class="hbar"></div></div>
+  <div class="sheet-head">
+    <div class="sheet-title">제1화 · PROFILE</div>
+    <span class="sheet-ep">무료</span>
+    <div class="sheet-close" onclick="closeSheet()">✕</div>
+  </div>
+  <div class="sc">
+    <div class="sc-intro">서사 및 관계성 있어요 ˙ᵕ˙ ♡<br>팔로우·교류 전에 언질 주시면 감사해요 🏐</div>
+    <div class="sc-sl">교류 안내</div>
+    <div class="sc-row"><span class="sc-k">교류 형태</span><span class="sc-v">1t1d · 맞팔</span></div>
+    <div class="sc-row"><span class="sc-k">비계 연결</span><span class="sc-v ok">환영</span></div>
+    <div class="sc-row"><span class="sc-k">작품 이야기</span><span class="sc-v ok">환영</span></div>
+    <div class="sc-row"><span class="sc-k">원작 미소비</span><span class="sc-v bad">사양</span></div>
+    <div class="sc-row"><span class="sc-k">드림 지우기</span><span class="sc-v bad">NG</span></div>
+    <div class="sc-row"><span class="sc-k">무단 캡처</span><span class="sc-v bad">NG</span></div>
+    <br>
+    <div class="sc-sl">기본 정보</div>
+    <div class="sc-row"><span class="sc-k">드림주</span><span class="sc-v">야치 히토카</span></div>
+    <div class="sc-row"><span class="sc-k">오픈</span><span class="sc-v ok">오픈</span></div>
+    <div class="sc-row"><span class="sc-k">이입</span><span class="sc-v">반이입</span></div>
+    <div class="sc-row"><span class="sc-k">유형</span><span class="sc-v">단일</span></div>
+    <div class="sc-row"><span class="sc-k">연령</span><span class="sc-v">성인</span></div>
+  </div>
+</div>
+
+<!-- 제2화 STYLE -->
+<div class="sheet" id="sheet-p1">
+  <div class="sheet-handle"><div class="hbar"></div></div>
+  <div class="sheet-head">
+    <div class="sheet-title">제2화 · STYLE</div>
+    <span class="sheet-ep">무료</span>
+    <div class="sheet-close" onclick="closeSheet()">✕</div>
+  </div>
+  <div class="sc">
+    <div class="sc-sl">드림 스타일</div>
+    <div class="sc-stat"><span class="sc-sl2">이입도</span><div class="sc-sb"><div class="sc-sf" style="width:70%"></div></div><span class="sc-sv">반이입</span></div>
+    <div class="sc-stat"><span class="sc-sl2">오픈도</span><div class="sc-sb"><div class="sc-sf" style="width:90%"></div></div><span class="sc-sv">오픈</span></div>
+    <div class="sc-stat"><span class="sc-sl2">교류도</span><div class="sc-sb"><div class="sc-sf" style="width:75%"></div></div><span class="sc-sv">활발</span></div>
+    <div class="sc-stat"><span class="sc-sl2">서사</span><div class="sc-sb"><div class="sc-sf" style="width:95%"></div></div><span class="sc-sv">있음</span></div>
+    <br>
+    <div class="sc-sl">규칙</div>
+    <div class="sc-rule"><span class="sc-rd">✦</span><span>단일 드림주 — 비교·엮기 절대 금지</span></div>
+    <div class="sc-rule"><span class="sc-rd">✦</span><span>교류 전 언질 필수</span></div>
+    <div class="sc-rule"><span class="sc-rd">✦</span><span>무단 캡처·전재·공유 금지</span></div>
+    <div class="sc-rule"><span class="sc-rd">✦</span><span>원작 미소비인 분 사양</span></div>
+  </div>
+</div>
+
+<!-- 제3화 NG -->
+<div class="sheet" id="sheet-p2">
+  <div class="sheet-handle"><div class="hbar"></div></div>
+  <div class="sheet-head">
+    <div class="sheet-title">제3화 · NG</div>
+    <span class="sheet-ep">무료</span>
+    <div class="sheet-close" onclick="closeSheet()">✕</div>
+  </div>
+  <div class="sc">
+    <div class="sc-ng"><div class="sc-nx">✕</div><span>드림 지우기 / 다른 드림 비교 언급</span></div>
+    <div class="sc-ng"><div class="sc-nx">✕</div><span>무단 캡처 · 공유 · 전재</span></div>
+    <div class="sc-ng"><div class="sc-nx">✕</div><span>혐한 · 혐오 · 정치 발언 계정</span></div>
+    <div class="sc-ng"><div class="sc-nx">✕</div><span>미성년자 성적 언급 계정</span></div>
+    <div class="sc-ng"><div class="sc-nx">✕</div><span>분쟁 유도 · 원작 미소비인 분</span></div>
+    <div class="sc-ng"><div class="sc-nx">✕</div><span>단일 드림주 비교 · 엮기</span></div>
+  </div>
+</div>
+
+<!-- 제4화 LINKS -->
+<div class="sheet" id="sheet-p3">
+  <div class="sheet-handle"><div class="hbar"></div></div>
+  <div class="sheet-head">
+    <div class="sheet-title">제4화 · LINKS</div>
+    <span class="sheet-ep">무료</span>
+    <div class="sheet-close" onclick="closeSheet()">✕</div>
+  </div>
+  <div class="sc">
+    <a class="sc-link" href="https://x.com/" target="_blank"><div class="sc-li scli-x">𝕏</div><span class="sc-ln">Twitter / X — x.com/@yourname</span><span class="sc-la">›</span></a>
+    <a class="sc-link" href="https://pushoong.com/" target="_blank"><div class="sc-li scli-p">🐻</div><span class="sc-ln">Pushoong — pushoong.com</span><span class="sc-la">›</span></a>
+    <a class="sc-link" href="https://postype.com/" target="_blank"><div class="sc-li scli-pt">📝</div><span class="sc-ln">Postype — postype.com</span><span class="sc-la">›</span></a>
+    <a class="sc-link" href="https://spin-spin.com/" target="_blank"><div class="sc-li scli-s">🌀</div><span class="sc-ln">Spin — spin-spin.com</span><span class="sc-la">›</span></a>
+  </div>
+</div>
+
+<!-- 이스터에그 -->
+<div class="egg" id="egg">
+  <div class="egg-card">
+    <div style="font-size:44px;margin-bottom:12px">🏐</div>
+    <div class="egg-t">비밀 해제!</div>
+    <div class="egg-m">여기까지 찾아와 줘서<br>고마워요 ˙ᵕ˙ ♡</div>
+    <button class="egg-btn" id="eggClose">닫기</button>
+  </div>
+</div>
+
+<script>
+(function(){
+/* ★ 커버 이미지 URL — 여기 변경 */
+const COVER_IMG = '';
+if(COVER_IMG){
+  const img=document.getElementById('coverImg');
+  img.src=COVER_IMG;
+  img.onload=function(){
+    const bg=document.getElementById('heroBgImg');
+    bg.style.backgroundImage='url('+COVER_IMG+')';
+    bg.classList.add('loaded');
+  };
+}
+
+/* 스크롤 → nav solid */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('solid',scrollY>80);
+},{passive:true});
+
+/* 탭 */
+const tabs=document.querySelectorAll('.tab');
+const panels=document.querySelectorAll('.panel');
+function activate(i){
+  tabs.forEach(t=>t.classList.remove('on'));
+  panels.forEach(p=>p.classList.remove('on'));
+  tabs[i].classList.add('on');panels[i].classList.add('on');
+}
+tabs.forEach((tab,i)=>tab.addEventListener('click',()=>activate(i)));
+const t=parseInt(new URLSearchParams(location.search).get('t'));
+if(!isNaN(t)&&t>=0&&t<tabs.length)activate(t);
+
+/* 줄거리 토글 */
+let synExp=false;
+window.toggleSyn=function(){
+  synExp=!synExp;
+  document.getElementById('synEl').classList.toggle('clamp',!synExp);
+  document.getElementById('synMore').textContent=synExp?'접기 ▴':'더보기 ▾';
+};
+
+/* 바텀시트 */
+let cur=null;
+window.openSheet=function(id){
+  if(cur)closeSheet();
+  const s=document.getElementById('sheet-'+id);if(!s)return;
+  cur=s;
+  document.getElementById('overlay').classList.add('show');
+  requestAnimationFrame(()=>s.classList.add('open'));
+};
+window.closeSheet=function(){
+  if(!cur)return;
+  cur.classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  cur=null;
+};
+
+/* 이스터에그 */
+let cnt=0,timer;
+document.getElementById('eggTrigger').addEventListener('click',()=>{
+  cnt++;clearTimeout(timer);timer=setTimeout(()=>cnt=0,700);
+  if(cnt>=3){cnt=0;document.getElementById('egg').classList.add('show');}
+});
+document.getElementById('eggClose').addEventListener('click',()=>document.getElementById('egg').classList.remove('show'));
+document.getElementById('egg').addEventListener('click',e=>{if(e.target.id==='egg')document.getElementById('egg').classList.remove('show');});
+})();
+</script>
+</body>
+</html>
